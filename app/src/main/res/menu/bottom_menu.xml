@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/homeFragment"
+        android:title="Дом"
+        android:icon="@drawable/ic_home"/>
+
+    <item
+        android:id="@+id/testsFragment"
+        android:title="Тесты"
+        android:icon="@drawable/ic_tests"/>
+
+    <item
+        android:id="@+id/topicsFragment"
+        android:title="Темы"
+        android:icon="@drawable/ic_topics"/>
+
+    <item
+        android:id="@+id/leaderboardFragment"
+        android:title="Рейтинг"
+        android:icon="@drawable/ic_leaderboard"/>
+
+    <item
+        android:id="@+id/profileFragment"
+        android:title="Профиль"
+        android:icon="@drawable/ic_profile"/>
+
+</menu>

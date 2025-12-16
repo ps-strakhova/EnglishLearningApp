@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/bg_dialog"
+    android:gravity="center_horizontal">
+
+    <!-- Крестик -->
+    <TextView
+        android:id="@+id/btnClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="✕"
+        android:textSize="18sp"
+        android:textColor="@color/text_muted"
+        android:layout_gravity="end"/>
+
+    <!-- Иконка -->
+    <TextView
+        android:id="@+id/icon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:gravity="center"
+        android:text="🎉"
+        android:textSize="28sp"
+        android:background="@drawable/bg_icon_circle"
+        android:layout_marginTop="12dp"/>
+
+    <!-- Заголовок -->
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Награда получена!"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_main"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Описание -->
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Вы выучили новые слова по теме"
+        android:textColor="@color/text_muted"
+        android:textSize="14sp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"/>
+
+    <!-- Баллы -->
+    <TextView
+        android:id="@+id/points"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+100 баллов"
+        android:textColor="@color/success_text"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:background="@color/success_bg"
+        android:padding="8dp"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Кнопка -->
+    <TextView
+        android:id="@+id/btnContinue"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_quiz_button"
+        android:gravity="center"
+        android:text="Продолжить обучение"
+        android:textColor="@color/bg"
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+</LinearLayout>

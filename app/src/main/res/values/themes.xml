@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.EnglishLearningApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">#030213</item>
+        <item name="colorPrimaryVariant">#030213</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+
+        <!-- Secondary color -->
+        <item name="colorSecondary">#ECECF0</item>
+        <item name="colorOnSecondary">#030213</item>
+
+        <!-- Background -->
+        <item name="android:windowBackground">#FFFFFF</item>
+    </style>
+
+</resources>
