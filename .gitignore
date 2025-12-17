@@ -12,4 +12,4 @@
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+local.propertiesgit rm --cached local.properties
