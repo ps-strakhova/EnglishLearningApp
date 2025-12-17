@@ -2,9 +2,7 @@ package com.example.englishlearningapp.ui.home
 
 import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -16,7 +14,7 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private lateinit var viewModel: HomeViewModel
 
@@ -34,14 +32,6 @@ class HomeFragment : Fragment() {
     // Recycler
     private lateinit var recentRecycler: RecyclerView
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_home, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -49,13 +39,10 @@ class HomeFragment : Fragment() {
 
         bindViews(view)
         setupChart()
-        updateChart()
+        observeProgress()
         updateStats()
         setupRecentActivity()
-        setupQuizButton(view)
     }
-
-    // -------------------- Views --------------------
 
     private fun bindViews(view: View) {
         progressChart = view.findViewById(R.id.progressChart)
@@ -65,8 +52,6 @@ class HomeFragment : Fragment() {
         textStreakValue = view.findViewById(R.id.textStreakValue)
         recentRecycler = view.findViewById(R.id.recentRecycler)
     }
-
-    // -------------------- Chart --------------------
 
     private fun setupChart() {
         progressChart.description.isEnabled = false
@@ -78,113 +63,65 @@ class HomeFragment : Fragment() {
         progressChart.setUsePercentValues(false)
     }
 
-    private fun updateChart() {
-        val learned = viewModel.learnedCount
-        val total = viewModel.totalCount
-        val remaining = total - learned
-        val percent = if (total > 0) learned * 100 / total else 0
+    private fun observeProgress() {
+        viewModel.learnedWords.observe(viewLifecycleOwner) { learned ->
+            viewModel.totalWords.observe(viewLifecycleOwner) { total ->
+                val remaining = total - learned
+                val percent = if (total > 0) learned * 100 / total else 0
+                updateChartUi(learned, remaining, percent)
+            }
+        }
+    }
 
-        val entries = listOf(
-            PieEntry(learned.toFloat()),
-            PieEntry(remaining.toFloat())
-        )
-
+    private fun updateChartUi(learned: Int, remaining: Int, percent: Int) {
+        val entries = listOf(PieEntry(learned.toFloat()), PieEntry(remaining.toFloat()))
         val dataSet = PieDataSet(entries, "").apply {
-            colors = listOf(
-                Color.parseColor("#6C4DFF"), // primary
-                Color.parseColor("#E9E7FF")  // remaining
-            )
+            colors = listOf(Color.parseColor("#6C4DFF"), Color.parseColor("#E9E7FF"))
             setDrawValues(false)
         }
-
         progressChart.data = PieData(dataSet)
-        progressChart.animateY(
-            900,
-            com.github.mikephil.charting.animation.Easing.EaseInOutQuad
-        )
+        progressChart.animateY(900, com.github.mikephil.charting.animation.Easing.EaseInOutQuad)
 
-
-        // Центр диаграммы
         val centerText = android.text.SpannableString("$percent%\nслов выучено")
-
-// Процент — крупный и фиолетовый
         centerText.setSpan(
-            android.text.style.RelativeSizeSpan(4f),
+            android.text.style.RelativeSizeSpan(2f),
             0,
             "$percent%".length,
             android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-
         centerText.setSpan(
             android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
             0,
             "$percent%".length,
             android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-
         centerText.setSpan(
-            android.text.style.ForegroundColorSpan(
-                Color.parseColor("#6C4DFF")
-            ),
+            android.text.style.ForegroundColorSpan(Color.parseColor("#6C4DFF")),
             0,
             "$percent%".length,
             android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-
-// Подпись — мелкая и серая
-        val subtitleStart = "$percent%\n".length
-        centerText.setSpan(
-            android.text.style.RelativeSizeSpan(1f),
-            subtitleStart,
-            centerText.length,
-            android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-
-        centerText.setSpan(
-            android.text.style.ForegroundColorSpan(
-                Color.parseColor("#94A3B8") // text_muted
-            ),
-            subtitleStart,
-            centerText.length,
-            android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-
         progressChart.centerText = centerText
 
-
-        // Legend text
         textStudied.text = "$learned выучено"
         textRemaining.text = "$remaining осталось"
     }
-
-    // -------------------- Stats --------------------
 
     private fun updateStats() {
         textNewTodayValue.text = viewModel.newWordsToday.toString()
         textStreakValue.text = viewModel.streakDays.toString()
     }
 
-    // -------------------- Recent Activity --------------------
 
     private fun setupRecentActivity() {
         recentRecycler.layoutManager = LinearLayoutManager(requireContext())
-        recentRecycler.adapter =
-            RecentActivityAdapter(viewModel.recentActivities) { item ->
-                ActivityDetailsDialogFragment(
-                    icon = item.iconEmoji,
-                    titleText = item.title,
-                    descriptionText = item.description,
-                    pointsValue = item.points
-                ).show(parentFragmentManager, "activity_dialog")
-            }
-    }
-
-    // -------------------- Quiz button --------------------
-
-    private fun setupQuizButton(view: View) {
-        view.findViewById<View>(R.id.btnQuickQuiz).setOnClickListener {
-            // пока заглушка
-            // позже сюда добавим переход к экрану тестов
+        recentRecycler.adapter = RecentActivityAdapter(viewModel.recentActivities) { item ->
+            ActivityDetailsDialogFragment(
+                icon = item.iconEmoji,
+                titleText = item.title,
+                descriptionText = item.description,
+                pointsValue = item.points
+            ).show(parentFragmentManager, "activity_dialog")
         }
     }
 }
