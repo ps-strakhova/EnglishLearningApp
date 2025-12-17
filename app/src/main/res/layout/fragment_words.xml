@@ -16,15 +16,23 @@
             android:id="@+id/textWelcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Темы"
+            android:text="Название темы"
             android:textColor="@color/text_main"
             android:textSize="22sp"
             android:textStyle="bold"/>
 
+        <TextView
+            android:id="@+id/textSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="5 карточек"
+            android:textColor="@color/text_muted"
+            android:textSize="14sp"/>
 
         <!-- Список тем -->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/topicsRecycler"
+            android:id="@+id/wordsRecycler"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
