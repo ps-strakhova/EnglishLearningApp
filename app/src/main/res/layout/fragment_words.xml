@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_words"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg">
@@ -11,6 +12,15 @@
         android:orientation="vertical"
         android:padding="@dimen/pad_screen">
 
+        <ImageView
+            android:id="@+id/buttonBack"
+            android:layout_width="17dp"
+            android:layout_height="17dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_back"
+            app:srcCompat="@drawable/ic_back" />
+
         <!-- Заголовок -->
         <TextView
             android:id="@+id/textWelcome"
@@ -19,7 +29,8 @@
             android:text="Название темы"
             android:textColor="@color/text_main"
             android:textSize="22sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:paddingTop="10dp"/>
 
         <TextView
             android:id="@+id/textSubtitle"

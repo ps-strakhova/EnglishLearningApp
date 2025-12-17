@@ -15,7 +15,10 @@ class MyApp : Application() {
         val dao = db.wordDao()
 
         CoroutineScope(Dispatchers.IO).launch {
-            dao.insertWords(sampleWords)
+            val total = dao.getTotalWordsCount()
+            if (total == 0) {
+                dao.insertWords(sampleWords)
+            }
         }
     }
 }
