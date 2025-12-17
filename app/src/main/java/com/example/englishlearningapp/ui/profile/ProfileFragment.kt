@@ -7,18 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.englishlearningapp.R
 
-
 class ProfileFragment : Fragment() {
 
-    // demo data from Figma
+    // demo data
     private val favoriteWords = listOf(
         Word(1, "Привет", "Hello", "Greetings", Status.FAVORITE),
         Word(2, "Спасибо", "Thank you", "Greetings", Status.FAVORITE),
@@ -49,6 +46,7 @@ class ProfileFragment : Fragment() {
     private lateinit var btnUnknown: Button
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        // Убедись, что это тот layout, где ты положила RecyclerView с id = rvWords
         return inflater.inflate(R.layout.fragment_profile, container, false)
     }
 
@@ -59,15 +57,14 @@ class ProfileFragment : Fragment() {
             // placeholder
         }
 
-        // profile card: avatar, camera, edit handled in layout (no actions for now)
         val btnCamera: ImageButton = view.findViewById(R.id.btnCamera)
         btnCamera.setOnClickListener {
-            // placeholder: open camera / picker
+            // placeholder
         }
 
         val btnEdit: ImageButton = view.findViewById(R.id.btnEdit)
         btnEdit.setOnClickListener {
-            // placeholder: edit profile
+            // placeholder
         }
 
         // stats (static demo)
@@ -83,8 +80,10 @@ class ProfileFragment : Fragment() {
         btnKnown = view.findViewById(R.id.btnKnown)
         btnUnknown = view.findViewById(R.id.btnUnknown)
 
-        recycler = view.findViewById(R.id.profileRecycler)
+        // RecyclerView — убедись, что id совпадает с layout (в XML в ответах ранее был rvWords)
+        recycler = view.findViewById(R.id.rvWords)
         recycler.layoutManager = LinearLayoutManager(requireContext())
+
         adapter = WordAdapter(listOf())
         recycler.adapter = adapter
 
@@ -97,17 +96,30 @@ class ProfileFragment : Fragment() {
     }
 
     private fun selectTab(tab: Tab) {
-        // update tab UI
-        btnFavorites.setBackgroundColor(if (tab == Tab.FAVORITES) Color.parseColor("#7C4DFF") else Color.parseColor("#F5F3FF"))
-        btnFavorites.setTextColor(if (tab == Tab.FAVORITES) Color.WHITE else Color.parseColor("#7C4DFF"))
+        // ------------------------
+        // 1) Устанавливаем isSelected — чтобы работал selector в drawable (background)
+        // ------------------------
+        btnFavorites.isSelected = (tab == Tab.FAVORITES)
+        btnKnown.isSelected = (tab == Tab.KNOWN)
+        btnUnknown.isSelected = (tab == Tab.UNKNOWN)
 
-        btnKnown.setBackgroundColor(if (tab == Tab.KNOWN) Color.parseColor("#4CAF50") else Color.parseColor("#F1F8F4"))
-        btnKnown.setTextColor(if (tab == Tab.KNOWN) Color.WHITE else Color.parseColor("#4CAF50"))
+        // ------------------------
+        // 2) Меняем textColor программно (если ты не сделала color selector для текста)
+        //    Это нужно, потому что drawable меняет только фон, а текст может оставаться старым.
+        // ------------------------
+        btnFavorites.setTextColor(
+            if (tab == Tab.FAVORITES) Color.parseColor("#FFFFFF") else Color.parseColor("#7C4DFF")
+        )
+        btnKnown.setTextColor(
+            if (tab == Tab.KNOWN) Color.parseColor("#FFFFFF") else Color.parseColor("#4CAF50")
+        )
+        btnUnknown.setTextColor(
+            if (tab == Tab.UNKNOWN) Color.parseColor("#FFFFFF") else Color.parseColor("#F44336")
+        )
 
-        btnUnknown.setBackgroundColor(if (tab == Tab.UNKNOWN) Color.parseColor("#F44336") else Color.parseColor("#FFEBEE"))
-        btnUnknown.setTextColor(if (tab == Tab.UNKNOWN) Color.WHITE else Color.parseColor("#F44336"))
-
-        // pick data
+        // ------------------------
+        // 3) Подставляем данные в адаптер (мок-данные пока)
+        // ------------------------
         val list = when (tab) {
             Tab.FAVORITES -> favoriteWords
             Tab.KNOWN -> knownWords
@@ -129,7 +141,7 @@ class ProfileFragment : Fragment() {
     )
 
     // ---------------- adapter ----------------
-    private inner class WordAdapter(var items: List<Word>) : RecyclerView.Adapter<WordAdapter.WH>() {
+    private inner class WordAdapter(private var items: List<Word>) : RecyclerView.Adapter<WordAdapter.WH>() {
 
         inner class WH(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val tvWord: TextView = itemView.findViewById(R.id.tvWord)
@@ -149,14 +161,12 @@ class ProfileFragment : Fragment() {
             holder.tvTranslation.text = w.translation
             holder.tvTopic.text = w.topic
 
-            // small status icon as emoji (simple and scalable)
             holder.ivStatus.text = when (w.status) {
-                Status.FAVORITE -> "♥" // heart
+                Status.FAVORITE -> "♥"
                 Status.KNOWN -> "✔"
                 Status.UNKNOWN -> "✖"
             }
 
-            // color tint for emoji (text color)
             val emojiColor = when (w.status) {
                 Status.FAVORITE -> Color.parseColor("#FF9800")
                 Status.KNOWN -> Color.parseColor("#4CAF50")
@@ -167,6 +177,7 @@ class ProfileFragment : Fragment() {
 
         override fun getItemCount(): Int = items.size
 
+        // Можно заменить позже на DiffUtil, но пока для теста так удобно.
         fun submitList(list: List<Word>) {
             this.items = list
             notifyDataSetChanged()

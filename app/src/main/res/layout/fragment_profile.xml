@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/profile_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -28,16 +29,17 @@
                 android:layout_height="wrap_content"
                 android:text="Profile"
                 android:textSize="28sp"
-                android:textStyle="600"
-                android:textColor="#1A1A1A" />
+                android:textColor="#1A1A1A"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium" />
 
             <ImageButton
                 android:id="@+id/btnSettings"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@android:color/transparent"
-                android:src="@android:drawable/ic_menu_manage"
-                android:tint="#757575"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_settings"
+                app:tint="#757575"
                 android:contentDescription="Settings" />
         </LinearLayout>
 
@@ -46,59 +48,50 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            android:background="@drawable/profile_gradient"
+            android:padding="24dp"
+            android:clipToOutline="true">
 
+            <!-- Avatar and User Info Row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="16dp"
-                android:background="@drawable/profile_gradient"
-                android:clipToPadding="false"
-                android:clipToOutline="true"
-                android:paddingTop="18dp"
-                android:paddingBottom="18dp"
-                android:backgroundTintMode="src_over"
-                android:layout_marginBottom="12dp">
+                android:gravity="center_vertical">
 
-                <!-- Avatar -->
                 <FrameLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
                     <TextView
                         android:id="@+id/tvAvatar"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
                         android:gravity="center"
                         android:text="😊"
-                        android:textSize="30sp"
-                        android:background="@drawable/avatar_bg"
-                        android:layout_marginEnd="12dp" />
+                        android:textSize="40sp"
+                        android:background="@drawable/avatar_bg" />
 
                     <ImageButton
                         android:id="@+id/btnCamera"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:layout_gravity="bottom|end"
-                        android:layout_marginTop="36dp"
-                        android:layout_marginStart="10dp"
                         android:background="@drawable/circle_white"
-                        android:src="@android:drawable/ic_menu_camera"
-                        android:tint="#7C4DFF"
+                        android:src="@drawable/ic_camera"
                         android:contentDescription="Camera" />
                 </FrameLayout>
 
                 <!-- User Info -->
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginStart="12dp">
+                    android:layout_marginStart="16dp">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical">
@@ -107,20 +100,21 @@
                             android:id="@+id/tvUserName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
                             android:text="LearnerPro"
-                            android:textSize="22sp"
-                            android:textStyle="700"
-                            android:textColor="#FFFFFF" />
+                            android:textColor="#FFFFFF"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
 
                         <ImageButton
                             android:id="@+id/btnEdit"
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:background="@android:color/transparent"
-                            android:src="@android:drawable/ic_menu_edit"
-                            android:tint="#FFFFFF"
-                            android:contentDescription="Edit"
-                            android:layout_marginStart="8dp"/>
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginStart="8dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="Edit name"
+                            android:src="@drawable/ic_pencil"
+                            app:tint="#FFFFFF" />
                     </LinearLayout>
 
                     <TextView
@@ -129,87 +123,115 @@
                         android:layout_height="wrap_content"
                         android:text="Member since Dec 2024"
                         android:textSize="14sp"
-                        android:textColor="#EDE7F6"
-                        android:layout_marginTop="6dp"/>
+                        android:textColor="#E6FFFFFF" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Stats -->
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="#33FFFFFF" />
+
+            <!-- Stats Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:weightSum="3"
-                android:padding="4dp"
-                android:layout_marginBottom="8dp">
+                android:layout_marginTop="16dp"
+                android:paddingTop="16dp"
+                android:background="?android:attr/selectableItemBackground">
 
+                <!-- Words Learned -->
                 <LinearLayout
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp">
+                    android:padding="8dp">
 
                     <TextView
                         android:id="@+id/tvWordsLearned"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="755"
-                        android:textSize="20sp"
-                        android:textStyle="700"
-                        android:textColor="#FFFFFF"/>
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:fontFamily="sans-serif-medium"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Words Learned"
                         android:textSize="12sp"
-                        android:textColor="#EDE7F6"/>
+                        android:textColor="#E6FFFFFF"
+                        android:fontFamily="sans-serif"/>
                 </LinearLayout>
 
+                <!-- Day Streak -->
                 <LinearLayout
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp">
+                    android:padding="8dp">
 
                     <TextView
                         android:id="@+id/tvStreak"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="28"
-                        android:textSize="20sp"
-                        android:textStyle="700"
-                        android:textColor="#FFFFFF"/>
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:fontFamily="sans-serif-medium"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Day Streak"
                         android:textSize="12sp"
-                        android:textColor="#EDE7F6"/>
+                        android:textColor="#E6FFFFFF"
+                        android:fontFamily="sans-serif"/>
                 </LinearLayout>
 
+                <!-- Divider -->
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="40dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="#33FFFFFF"/>
+
+                <!-- Ranking -->
                 <LinearLayout
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="12dp">
+                    android:padding="8dp">
 
                     <TextView
                         android:id="@+id/tvRank"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="#4"
-                        android:textSize="20sp"
-                        android:textStyle="700"
-                        android:textColor="#FFFFFF"/>
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:fontFamily="sans-serif-medium"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Ranking"
                         android:textSize="12sp"
-                        android:textColor="#EDE7F6"/>
+                        android:textColor="#E6FFFFFF"
+                        android:fontFamily="sans-serif"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -219,48 +241,56 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:weightSum="3">
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp">
 
             <Button
                 android:id="@+id/btnFavorites"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="44dp"
-                android:text="Favorites (0)"
-                android:padding="8dp"
+                android:layout_weight="1"
+                android:text="Favorites"
                 android:textSize="14sp"
-                android:textStyle="600"/>
+                android:textStyle="bold"
+                android:background="@drawable/tab_favorites"
+                android:textColor="#7C4DFF"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginEnd="4dp"/>
 
             <Button
                 android:id="@+id/btnKnown"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="44dp"
-                android:text="Known (0)"
-                android:padding="8dp"
+                android:layout_weight="1"
+                android:text="Known"
                 android:textSize="14sp"
-                android:textStyle="600"/>
+                android:textStyle="bold"
+
+                android:textColor="#4CAF50"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginEnd="4dp"/>
 
             <Button
                 android:id="@+id/btnUnknown"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="44dp"
-                android:text="Don't Know (0)"
-                android:padding="8dp"
+                android:layout_weight="1"
+                android:text="Don't Know"
                 android:textSize="14sp"
-                android:textStyle="600"/>
+                android:textStyle="bold"
 
+                android:textColor="#F44336"
+                android:fontFamily="sans-serif-medium"/>
         </LinearLayout>
 
-        <!-- Recycler / list -->
+        <!-- RecyclerView для слов -->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/profileRecycler"
+            android:id="@+id/rvWords"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"
-            android:nestedScrollingEnabled="false"/>
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"/>
+
     </LinearLayout>
 </ScrollView>

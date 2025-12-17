@@ -184,10 +184,6 @@ class TopicDetailFragment : Fragment() {
                 }
             }
 
-            // --- CARD CLICK (optional, если нужен переход) ---
-            holder.itemView.setOnClickListener {
-                onClick(card)
-            }
         }
 
 
