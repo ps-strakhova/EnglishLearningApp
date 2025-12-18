@@ -16,13 +16,15 @@ import com.example.englishlearningapp.data.model.WordEntity
 import com.example.englishlearningapp.data.repository.WordRepository
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.launch
+import android.widget.ImageView
 
 class WordCardFragment : Fragment() {
 
     // все view
     private lateinit var tvWordIndex: TextView
     private lateinit var btnClose: TextView
-    private lateinit var btnFavorite: TextView
+    private lateinit var btnFavorite: ImageView
+
     private lateinit var cardWord: MaterialCardView
     private lateinit var ivStatusEmoji: TextView
     private lateinit var tvWord: TextView
@@ -34,8 +36,8 @@ class WordCardFragment : Fragment() {
     private lateinit var dotsLayout: LinearLayout
     private lateinit var navigationLayout: LinearLayout
     private lateinit var flipButtonsLayout: LinearLayout
-    private lateinit var btnDontKnow: Button
-    private lateinit var btnKnow: Button
+    private lateinit var btnDontKnow: TextView
+    private lateinit var btnKnow: TextView
 
     private lateinit var repository: WordRepository
     private var words: List<WordEntity> = emptyList()
@@ -80,10 +82,11 @@ class WordCardFragment : Fragment() {
             lifecycleScope.launch {
                 repository.setFavorite(word, newFavorite)
                 word.isFavorite = newFavorite
-                btnFavorite.text = if (newFavorite) "♥" else "♡"
+                btnFavorite.setImageResource(
+                    if (newFavorite) R.drawable.heart_fill else R.drawable.heart
+                )
             }
         }
-
         // Переворот карточки
         cardWord.setOnClickListener {
             val word = words.getOrNull(currentIndex) ?: return@setOnClickListener
@@ -174,7 +177,10 @@ class WordCardFragment : Fragment() {
         cardWord.setCardBackgroundColor(Color.WHITE)
         cardWord.strokeColor = Color.WHITE
 
-        btnFavorite.text = if (word.isFavorite) "♥" else "♡"
+        btnFavorite.setImageResource(
+            if (word.isFavorite) R.drawable.heart_fill else R.drawable.heart
+        )
+
         tvWordIndex.text = "${currentIndex + 1}/${words.size}"
 
         updateDots()

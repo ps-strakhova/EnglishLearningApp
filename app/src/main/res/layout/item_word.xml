@@ -11,7 +11,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
 
         <!-- status emoji/icon -->
         <TextView
@@ -43,7 +45,6 @@
                     android:text="Word"
                     android:textSize="17sp"
                     android:textStyle="bold"
-
                     android:textColor="#1A1A1A"/>
 
                 <!-- small badge left -->
@@ -69,7 +70,7 @@
                 android:text="Translation"
                 android:textSize="14sp"
                 android:textColor="#757575"
-                android:layout_marginTop="6dp"/>
+                android:layout_marginTop="1dp"/>
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

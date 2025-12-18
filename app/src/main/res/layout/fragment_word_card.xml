@@ -10,12 +10,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="1/8"
-        android:textSize="14sp"
-        android:textColor="#757575"
+        android:textSize="16sp"
+        android:textColor="#7C4DFF"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="17dp"/>
 
     <!-- Крестик закрытия -->
     <TextView
@@ -24,22 +24,22 @@
         android:layout_height="wrap_content"
         android:text="✕"
         android:textSize="20sp"
-        android:textColor="#FF0000"
+        android:textColor="#9E9E9E"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_margin="12dp"/>
 
     <!-- Сердечко "любимые" -->
-    <TextView
+    <ImageView
         android:id="@+id/btnFavorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="♡"
-        android:textSize="20sp"
-        android:textColor="#FF4081"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="12dp"
+        android:paddingTop="6dp"
+        android:src="@drawable/heart"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="12dp"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/heart" />
 
     <!-- Карточка -->
     <com.google.android.material.card.MaterialCardView
@@ -124,71 +124,108 @@
     <!-- Навигация (исчезает при перевороте) -->
     <LinearLayout
         android:id="@+id/navigationLayout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:gravity="center_vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="16dp">
 
+        <!-- Левая кнопка -->
         <TextView
             android:id="@+id/btnPrev"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="←"
-            android:textSize="20sp"
-            android:textColor="#7C4DFF"
-            android:padding="12dp"/>
+            android:width="100dp"
+            android:text="&lt; Назад"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="@drawable/bg_chip_grey"
+            android:padding="12dp"
+            android:layout_marginStart="15dp"/>
 
+        <!-- Пробел для распределения -->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
+
+        <!-- Центральные точки -->
         <LinearLayout
             android:id="@+id/dotsLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:gravity="center"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"/>
+            android:orientation="horizontal"/>
 
+        <!-- Пробел для распределения -->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
+
+        <!-- Правая кнопка -->
         <TextView
             android:id="@+id/btnNext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="→"
-            android:textSize="20sp"
-            android:textColor="#7C4DFF"
-            android:padding="12dp"/>
+            android:width="100dp"
+            android:text="Вперёд >"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="@drawable/bg_chip_grey"
+            android:padding="12dp"
+            android:layout_marginEnd="15dp"/>
     </LinearLayout>
 
-    <!-- Кнопки "Don't know" и "Know" (по половине экрана, видны только после переворота) -->
+
+    <!-- Кнопки "Don't know" и "Know" -->
+    <!-- Кнопки "Don't know" и "Know" заменены на TextView -->
     <LinearLayout
         android:id="@+id/flipButtonsLayout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="8dp"
+        android:gravity="center_vertical"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <Button
+        <TextView
             android:id="@+id/btnDontKnow"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_weight="1"
             android:text="Don't know"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#FF5252"/>
+            android:textColor="@color/text_muted"
+            android:gravity="center"
+            android:background="@drawable/bg_chip_muted"
+            android:textSize="16sp"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true"/>
 
-        <Button
+        <TextView
             android:id="@+id/btnKnow"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_weight="1"
             android:text="Know"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#4CAF50"/>
-    </LinearLayout>
+            android:gravity="center"
+            android:background="@drawable/bg_chip_know"
+            android:textSize="16sp"
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:focusable="true"/>
+</LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
