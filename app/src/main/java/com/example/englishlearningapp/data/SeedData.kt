@@ -4,12 +4,6 @@ import com.example.englishlearningapp.data.dao.WordDao
 import com.example.englishlearningapp.data.model.TopicItem
 import com.example.englishlearningapp.data.model.WordEntity
 
-val sampleTopicsIcons = mapOf(
-    "Фрукты" to "🍎",
-    "Транспорт" to "🚗",
-    "Приветствия" to "👋"
-)
-
 suspend fun seedDatabaseIfEmpty(dao: WordDao) {
     val count = dao.getTotalWordsCount()
     if (count == 0) {
@@ -24,7 +18,7 @@ suspend fun getSeedTopicsWithCounts(dao: WordDao): List<TopicItem> {
         val learned = dao.getLearnedWordsCountByTopic(topic)
         TopicItem(
             title = topic,
-            iconTopic = sampleTopicsIcons[topic] ?: "📚",
+            iconTopic = TopicIcons.getIcon(topic),
             totalWords = total,
             learnedWords = learned
         )
@@ -32,12 +26,49 @@ suspend fun getSeedTopicsWithCounts(dao: WordDao): List<TopicItem> {
 }
 
 val sampleWords = listOf(
-    WordEntity(word = "Apple", translation = "Яблоко", topic = "Фрукты", difficulty = "easy", isLearned = true, icon = "🍎"),
-    WordEntity(word = "Banana", translation = "Банан", topic = "Фрукты", difficulty = "easy", icon = "🍌"),
-    WordEntity(word = "Car", translation = "Машина", topic = "Транспорт", difficulty = "medium", isLearned = true, icon = "🚗"),
-    WordEntity(word = "Train", translation = "Поезд", topic = "Транспорт", difficulty = "medium", icon = "🚆"),
-    WordEntity(word = "Hello", translation = "Привет", topic = "Приветствия", difficulty = "easy", isLearned = true, icon = "👋"),
-    WordEntity(word = "Goodbye", translation = "До свидания", topic = "Приветствия", difficulty = "easy", icon = "👋")
+    WordEntity(
+        word = "Apple",
+        translation = "Яблоко",
+        topic = "Фрукты",
+        difficulty = "easy",
+        isLearned = true,
+        icon = "🍎"
+    ),
+    WordEntity(
+        word = "Banana",
+        translation = "Банан",
+        topic = "Фрукты",
+        difficulty = "easy",
+        icon = "🍌"
+    ),
+    WordEntity(
+        word = "Car",
+        translation = "Машина",
+        topic = "Транспорт",
+        difficulty = "medium",
+        isLearned = true,
+        icon = "🚗"
+    ),
+    WordEntity(
+        word = "Train",
+        translation = "Поезд",
+        topic = "Транспорт",
+        difficulty = "medium",
+        icon = "🚆"
+    ),
+    WordEntity(
+        word = "Hello",
+        translation = "Привет",
+        topic = "Приветствия",
+        difficulty = "easy",
+        isLearned = true,
+        icon = "👋"
+    ),
+    WordEntity(
+        word = "Goodbye",
+        translation = "До свидания",
+        topic = "Приветствия",
+        difficulty = "easy",
+        icon = "👋"
+    )
 )
-
-

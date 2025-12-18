@@ -9,7 +9,7 @@ import com.example.englishlearningapp.data.model.WordEntity
 
 @Database(
     entities = [WordEntity::class],
-    version = 2, // увеличиваем версию БД
+    version = 3, // увеличиваем версию БД
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

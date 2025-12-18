@@ -5,15 +5,12 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "words")
 data class WordEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val word: String,
     val translation: String,
-
-    val isLearned: Boolean = false,
-    val isFavorite: Boolean = false,
-    val difficulty: String, // easy / medium / hard
     val topic: String,
-    val icon: String = "📚"
+    val difficulty: String,
+    val isLearned: Boolean = false,
+    val icon: String   // ✅ БЫЛ Int → стал String
 )
+

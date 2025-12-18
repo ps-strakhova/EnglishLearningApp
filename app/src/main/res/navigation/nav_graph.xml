@@ -38,4 +38,11 @@
             app:argType="string" />
     </fragment>
 
+    <fragment
+        android:id="@+id/testRunFragment"
+        android:name="com.example.englishlearningapp.ui.tests.TestRunFragment"
+        android:label="TestRunFragment" />
+
+
+
 </navigation>
