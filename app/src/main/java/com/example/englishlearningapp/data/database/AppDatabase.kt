@@ -4,12 +4,17 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.englishlearningapp.data.dao.WordDao
 import com.example.englishlearningapp.data.model.WordEntity
+import com.example.englishlearningapp.data.sampleWords
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Database(
     entities = [WordEntity::class],
-    version = 2, // увеличиваем версию БД
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -27,11 +32,13 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "english_learning_db"
                 )
-                    .fallbackToDestructiveMigration() // пересоздаёт БД при изменении схемы
+                    .fallbackToDestructiveMigration()
                     .build()
+
                 INSTANCE = instance
                 instance
             }
         }
     }
 }
+

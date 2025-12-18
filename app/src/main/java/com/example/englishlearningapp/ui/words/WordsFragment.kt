@@ -26,6 +26,18 @@ class WordsFragment : Fragment() {
 
     private var topicName: String? = null
 
+    fun getCardDeclension(count: Int): String {
+        val rem100 = count % 100
+        val rem10 = count % 10
+
+        return when {
+            rem100 in 11..14 -> "$count карточек"
+            rem10 == 1 -> "$count карточка"
+            rem10 in 2..4 -> "$count карточки"
+            else -> "$count карточек"
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Получаем название темы из аргументов
@@ -67,7 +79,7 @@ class WordsFragment : Fragment() {
             lifecycleScope.launch {
                 val words = repository.getWordsByTopic(topic)
                 recyclerView.adapter = WordsAdapter(words)
-                textSubtitle.text = "${words.size} карточек"
+                textSubtitle.text = getCardDeclension(words.size)
             }
         }
     }

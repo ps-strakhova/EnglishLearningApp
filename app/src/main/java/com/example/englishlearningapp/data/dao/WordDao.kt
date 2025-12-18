@@ -9,6 +9,10 @@ import com.example.englishlearningapp.data.model.WordEntity
 @Dao
 interface WordDao {
 
+    // =====================
+    // ====== READ =========
+    // =====================
+
     @Query("SELECT DISTINCT topic FROM words")
     suspend fun getTopics(): List<String>
 
@@ -27,12 +31,26 @@ interface WordDao {
     @Query("SELECT COUNT(*) FROM words WHERE topic = :topic AND isLearned = 1")
     suspend fun getLearnedWordsCountByTopic(topic: String): Int
 
-    // ===== Вставка =====
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWord(word: WordEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWords(words: List<WordEntity>)
+    // =====================
+    // ====== SEED =========
+    // =====================
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertWordsIgnore(words: List<WordEntity>)
+
+    @Query("""
+        UPDATE words
+        SET translation = :translation,
+            difficulty = :difficulty,
+            icon = :icon
+        WHERE word = :word AND topic = :topic
+    """)
+    suspend fun updateWordMeta(
+        word: String,
+        topic: String,
+        translation: String,
+        difficulty: String,
+        icon: String
+    )
 }
-
-

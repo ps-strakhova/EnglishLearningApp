@@ -1,9 +1,13 @@
 package com.example.englishlearningapp.data.model
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "words")
+@Entity(
+    tableName = "words",
+    indices = [Index(value = ["word", "topic"], unique = true)]
+)
 data class WordEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -13,7 +17,7 @@ data class WordEntity(
 
     val isLearned: Boolean = false,
     val isFavorite: Boolean = false,
-    val difficulty: String, // easy / medium / hard
+    val difficulty: String,
     val topic: String,
     val icon: String = "📚"
 )
