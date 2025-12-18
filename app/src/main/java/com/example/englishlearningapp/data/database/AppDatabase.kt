@@ -9,7 +9,8 @@ import com.example.englishlearningapp.data.model.WordEntity
 
 @Database(
     entities = [WordEntity::class],
-    version = 1
+    version = 2, // увеличиваем версию БД
+    exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -25,7 +26,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "english_learning_db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // пересоздаёт БД при изменении схемы
+                    .build()
                 INSTANCE = instance
                 instance
             }
