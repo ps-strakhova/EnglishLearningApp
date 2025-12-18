@@ -30,12 +30,28 @@
         android:name="com.example.englishlearningapp.ui.profile.ProfileFragment" />
 
     <fragment
+        android:id="@+id/wordCardFragment"
+        android:name="com.example.englishlearningapp.ui.topics.WordCardFragment"
+        android:label="Word Card">
+        <argument
+            android:name="topicName"
+            app:argType="string" />
+        <argument
+            android:name="startIndex"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
         android:id="@+id/wordsFragment"
         android:name="com.example.englishlearningapp.ui.topics.WordsFragment"
         android:label="Words">
         <argument
             android:name="topicName"
             app:argType="string" />
+        <action
+            android:id="@+id/action_wordsFragment_to_wordCardFragment"
+            app:destination="@id/wordCardFragment" />
     </fragment>
+
 
 </navigation>

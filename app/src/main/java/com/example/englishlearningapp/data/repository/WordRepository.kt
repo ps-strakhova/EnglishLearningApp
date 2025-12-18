@@ -20,7 +20,8 @@ class WordRepository(private val dao: WordDao) {
                 topic = word.topic,
                 translation = word.translation,
                 difficulty = word.difficulty,
-                icon = word.icon
+                icon = word.icon,
+                example = word.example
             )
         }
     }

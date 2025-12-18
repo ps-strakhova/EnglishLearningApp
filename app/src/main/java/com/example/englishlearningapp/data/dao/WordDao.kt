@@ -40,17 +40,19 @@ interface WordDao {
     suspend fun insertWordsIgnore(words: List<WordEntity>)
 
     @Query("""
-        UPDATE words
-        SET translation = :translation,
-            difficulty = :difficulty,
-            icon = :icon
-        WHERE word = :word AND topic = :topic
-    """)
+    UPDATE words
+    SET translation = :translation,
+        difficulty = :difficulty,
+        icon = :icon,
+        example = :example
+    WHERE word = :word AND topic = :topic
+""")
     suspend fun updateWordMeta(
         word: String,
         topic: String,
         translation: String,
         difficulty: String,
-        icon: String
+        icon: String,
+        example: String
     )
 }

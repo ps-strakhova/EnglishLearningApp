@@ -8,10 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.englishlearningapp.R
 import com.example.englishlearningapp.data.model.WordEntity
 
-class WordsAdapter(
-    private val words: List<WordEntity>,
-    private val onWordClick: (WordEntity) -> Unit
-) : RecyclerView.Adapter<WordsAdapter.WordViewHolder>() {
+class WordCardAdapter(private val words: List<WordEntity>) :
+    RecyclerView.Adapter<WordCardAdapter.WordViewHolder>() {
 
     class WordViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val icon: TextView = view.findViewById(R.id.icon)
@@ -32,11 +30,6 @@ class WordsAdapter(
         holder.title.text = word.word
         holder.category.text = if (word.isLearned) "Выучено" else "Не выучено"
         holder.difficulty.text = "• ${word.difficulty}"
-
-        // Клик на элемент
-        holder.itemView.setOnClickListener {
-            onWordClick(word)
-        }
     }
 
     override fun getItemCount() = words.size
