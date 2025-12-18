@@ -55,4 +55,17 @@ interface WordDao {
         icon: String,
         example: String
     )
+
+    @Query("UPDATE words SET isFavorite = :isFavorite WHERE id = :id")
+    suspend fun updateFavorite(id: Int, isFavorite: Boolean)
+
+    @Query("UPDATE words SET isLearned = :isLearned WHERE id = :id")
+    suspend fun updateLearned(id: Int, isLearned: Boolean)
+
+    @Query("SELECT * FROM words WHERE isFavorite = :fav")
+    suspend fun getWordsByFavorite(fav: Boolean): List<WordEntity>
+
+    @Query("SELECT * FROM words WHERE isLearned = :learned")
+    suspend fun getWordsByLearned(learned: Boolean): List<WordEntity>
+
 }

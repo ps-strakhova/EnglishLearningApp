@@ -57,4 +57,25 @@ class WordRepository(private val dao: WordDao) {
     suspend fun getWordsByTopic(topic: String): List<WordEntity> {
         return dao.getWordsByTopic(topic)
     }
+
+    suspend fun setFavorite(word: WordEntity, favorite: Boolean) {
+        dao.updateFavorite(word.id, favorite)
+    }
+
+    suspend fun setLearned(word: WordEntity, learned: Boolean) {
+        dao.updateLearned(word.id, learned)
+    }
+
+    suspend fun getFavoriteWords(): List<WordEntity> {
+        return dao.getWordsByFavorite(true)
+    }
+
+    suspend fun getLearnedWords(): List<WordEntity> {
+        return dao.getWordsByLearned(true)
+    }
+
+    suspend fun getUnknownWords(): List<WordEntity> {
+        return dao.getWordsByLearned(false)
+    }
+
 }

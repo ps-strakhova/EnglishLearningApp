@@ -15,8 +15,8 @@ data class WordEntity(
     val word: String,
     val translation: String,
     val example: String,
-    val isLearned: Boolean = false,
-    val isFavorite: Boolean = false,
+    var isLearned: Boolean = false,
+    var isFavorite: Boolean = false,
     val difficulty: String,
     val topic: String,
     val icon: String = "📚"

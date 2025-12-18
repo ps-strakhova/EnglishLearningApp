@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 
 class WordCardFragment : Fragment() {
 
+    // все view
     private lateinit var tvWordIndex: TextView
     private lateinit var btnClose: TextView
     private lateinit var btnFavorite: TextView
@@ -39,7 +40,6 @@ class WordCardFragment : Fragment() {
     private lateinit var repository: WordRepository
     private var words: List<WordEntity> = emptyList()
     private var currentIndex = 0
-    private var favorites = mutableSetOf<WordEntity>()
     private var topicName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,13 +48,10 @@ class WordCardFragment : Fragment() {
         currentIndex = arguments?.getInt("startIndex") ?: 0
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.fragment_word_card, container, false)
 
-        // Инициализация элементов
+        // Инициализация
         tvWordIndex = view.findViewById(R.id.tvWordIndex)
         btnClose = view.findViewById(R.id.btnClose)
         btnFavorite = view.findViewById(R.id.btnFavorite)
@@ -78,48 +75,40 @@ class WordCardFragment : Fragment() {
         btnClose.setOnClickListener { parentFragmentManager.popBackStack() }
 
         btnFavorite.setOnClickListener {
-            words.getOrNull(currentIndex)?.let {
-                if (favorites.contains(it)) {
-                    favorites.remove(it)
-                    btnFavorite.text = "♡"
-                } else {
-                    favorites.add(it)
-                    btnFavorite.text = "♥"
-                }
+            val word = words.getOrNull(currentIndex) ?: return@setOnClickListener
+            val newFavorite = !word.isFavorite
+            lifecycleScope.launch {
+                repository.setFavorite(word, newFavorite)
+                word.isFavorite = newFavorite
+                btnFavorite.text = if (newFavorite) "♥" else "♡"
             }
         }
 
-        // Обработчик переворота карточки
+        // Переворот карточки
         cardWord.setOnClickListener {
+            val word = words.getOrNull(currentIndex) ?: return@setOnClickListener
             val isFlipped = tvTranslation.visibility == View.VISIBLE
 
             if (isFlipped) {
-                // Возврат в исходное состояние
+                // исходное состояние
                 tvWord.visibility = View.VISIBLE
                 ivStatusEmoji.visibility = View.VISIBLE
                 tvFlipHint.visibility = View.VISIBLE
-
                 tvTranslation.visibility = View.GONE
                 tvExample.visibility = View.GONE
-
                 navigationLayout.visibility = View.VISIBLE
                 flipButtonsLayout.visibility = View.GONE
-
                 cardWord.setCardBackgroundColor(Color.WHITE)
                 cardWord.strokeColor = Color.WHITE
-
             } else {
-                // Переворот карточки
+                // переворот
                 tvWord.visibility = View.GONE
                 ivStatusEmoji.visibility = View.GONE
                 tvFlipHint.visibility = View.GONE
-
                 tvTranslation.visibility = View.VISIBLE
                 tvExample.visibility = View.VISIBLE
-
                 navigationLayout.visibility = View.GONE
                 flipButtonsLayout.visibility = View.VISIBLE
-
                 cardWord.setCardBackgroundColor(Color.parseColor("#F5F3FF"))
                 cardWord.strokeColor = Color.parseColor("#7C4DFF")
             }
@@ -128,12 +117,25 @@ class WordCardFragment : Fragment() {
         btnPrev.setOnClickListener { showWord(currentIndex - 1) }
         btnNext.setOnClickListener { showWord(currentIndex + 1) }
 
-        // Кнопки "Don't know" и "Know" можно обработать тут
-        btnDontKnow.setOnClickListener { showWord(currentIndex + 1) }
-        btnKnow.setOnClickListener { showWord(currentIndex + 1) }
+        btnDontKnow.setOnClickListener {
+            val word = words.getOrNull(currentIndex) ?: return@setOnClickListener
+            lifecycleScope.launch {
+                repository.setLearned(word, false)
+                word.isLearned = false
+                showWord(currentIndex + 1)
+            }
+        }
+
+        btnKnow.setOnClickListener {
+            val word = words.getOrNull(currentIndex) ?: return@setOnClickListener
+            lifecycleScope.launch {
+                repository.setLearned(word, true)
+                word.isLearned = true
+                showWord(currentIndex + 1)
+            }
+        }
 
         loadWords()
-
         return view
     }
 
@@ -160,11 +162,11 @@ class WordCardFragment : Fragment() {
         tvTranslation.text = word.translation
         tvExample.text = word.example
 
-        tvTranslation.visibility = View.GONE
-        tvExample.visibility = View.GONE
-        tvFlipHint.visibility = View.VISIBLE
         tvWord.visibility = View.VISIBLE
         ivStatusEmoji.visibility = View.VISIBLE
+        tvFlipHint.visibility = View.VISIBLE
+        tvTranslation.visibility = View.GONE
+        tvExample.visibility = View.GONE
 
         navigationLayout.visibility = View.VISIBLE
         flipButtonsLayout.visibility = View.GONE
@@ -172,8 +174,8 @@ class WordCardFragment : Fragment() {
         cardWord.setCardBackgroundColor(Color.WHITE)
         cardWord.strokeColor = Color.WHITE
 
+        btnFavorite.text = if (word.isFavorite) "♥" else "♡"
         tvWordIndex.text = "${currentIndex + 1}/${words.size}"
-        btnFavorite.text = if (favorites.contains(word)) "♥" else "♡"
 
         updateDots()
     }
@@ -198,3 +200,4 @@ class WordCardFragment : Fragment() {
         }
     }
 }
+

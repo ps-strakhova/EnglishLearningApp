@@ -9,33 +9,21 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.englishlearningapp.R
+import com.example.englishlearningapp.data.database.AppDatabase
+import com.example.englishlearningapp.data.model.WordEntity
+import com.example.englishlearningapp.data.repository.WordRepository
+import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
 
-    // demo data
-    private val favoriteWords = listOf(
-        Word(1, "Привет", "Hello", "Greetings", Status.FAVORITE),
-        Word(2, "Спасибо", "Thank you", "Greetings", Status.FAVORITE),
-        Word(3, "Пожалуйста", "Please", "Greetings", Status.FAVORITE),
-        Word(4, "Извините", "Excuse me", "Greetings", Status.FAVORITE)
-    )
-
-    private val knownWords = listOf(
-        Word(11, "Здравствуйте", "Hello (formal)", "Greetings", Status.KNOWN),
-        Word(12, "Доброе утро", "Good morning", "Greetings", Status.KNOWN),
-        Word(13, "Добрый вечер", "Good evening", "Greetings", Status.KNOWN),
-        Word(14, "Спокойной ночи", "Good night", "Greetings", Status.KNOWN),
-        Word(15, "До свидания", "Goodbye", "Greetings", Status.KNOWN)
-    )
-
-    private val unknownWords = listOf(
-        Word(21, "Необходимо", "Necessary", "Advanced", Status.UNKNOWN),
-        Word(22, "Возможность", "Opportunity", "Advanced", Status.UNKNOWN),
-        Word(23, "Произношение", "Pronunciation", "Advanced", Status.UNKNOWN)
-    )
+    private lateinit var repository: WordRepository
+    private var favoriteWords = listOf<WordEntity>()
+    private var knownWords = listOf<WordEntity>()
+    private var unknownWords = listOf<WordEntity>()
 
     private lateinit var recycler: RecyclerView
     private lateinit var adapter: WordAdapter
@@ -45,29 +33,25 @@ class ProfileFragment : Fragment() {
     private lateinit var btnKnown: Button
     private lateinit var btnUnknown: Button
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        // Убедись, что это тот layout, где ты положила RecyclerView с id = rvWords
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         return inflater.inflate(R.layout.fragment_profile, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        // header buttons (settings can be ImageButton)
+        // header buttons
         val btnSettings: ImageButton = view.findViewById(R.id.btnSettings)
-        btnSettings.setOnClickListener {
-            // placeholder
-        }
-
         val btnCamera: ImageButton = view.findViewById(R.id.btnCamera)
-        btnCamera.setOnClickListener {
-            // placeholder
-        }
-
         val btnEdit: ImageButton = view.findViewById(R.id.btnEdit)
-        btnEdit.setOnClickListener {
-            // placeholder
-        }
 
-        // stats (static demo)
+        btnSettings.setOnClickListener { /* placeholder */ }
+        btnCamera.setOnClickListener { /* placeholder */ }
+        btnEdit.setOnClickListener { /* placeholder */ }
+
+        // stats (demo)
         val tvWordsLearned: TextView = view.findViewById(R.id.tvWordsLearned)
         val tvStreak: TextView = view.findViewById(R.id.tvStreak)
         val tvRank: TextView = view.findViewById(R.id.tvRank)
@@ -80,52 +64,78 @@ class ProfileFragment : Fragment() {
         btnKnown = view.findViewById(R.id.btnKnown)
         btnUnknown = view.findViewById(R.id.btnUnknown)
 
-        // RecyclerView — убедись, что id совпадает с layout (в XML в ответах ранее был rvWords)
+        // RecyclerView
         recycler = view.findViewById(R.id.rvWords)
         recycler.layoutManager = LinearLayoutManager(requireContext())
-
         adapter = WordAdapter(listOf())
         recycler.adapter = adapter
 
-        // default tab
-        selectTab(Tab.FAVORITES)
+        // repository
+        val dao = AppDatabase.getDatabase(requireContext()).wordDao()
+        repository = WordRepository(dao)
 
+        // load words from DB
+        lifecycleScope.launch {
+            favoriteWords = repository.getFavoriteWords()
+            knownWords = repository.getLearnedWords()
+            unknownWords = repository.getUnknownWords()
+
+            // обновляем таб по умолчанию
+            selectTab(Tab.FAVORITES)
+
+            // обновляем счетчики на кнопках
+            btnFavorites.text = "Favorites (${favoriteWords.size})"
+            btnKnown.text = "Known (${knownWords.size})"
+            btnUnknown.text = "Don't Know (${unknownWords.size})"
+        }
+
+        // default tab
         btnFavorites.setOnClickListener { selectTab(Tab.FAVORITES) }
         btnKnown.setOnClickListener { selectTab(Tab.KNOWN) }
         btnUnknown.setOnClickListener { selectTab(Tab.UNKNOWN) }
     }
 
     private fun selectTab(tab: Tab) {
-        // ------------------------
-        // 1) Устанавливаем isSelected — чтобы работал selector в drawable (background)
-        // ------------------------
+        // выделяем кнопку
         btnFavorites.isSelected = (tab == Tab.FAVORITES)
         btnKnown.isSelected = (tab == Tab.KNOWN)
         btnUnknown.isSelected = (tab == Tab.UNKNOWN)
 
-        // ------------------------
-        // 2) Меняем textColor программно (если ты не сделала color selector для текста)
-        //    Это нужно, потому что drawable меняет только фон, а текст может оставаться старым.
-        // ------------------------
+        // цвет текста
         btnFavorites.setTextColor(
-            if (tab == Tab.FAVORITES) Color.parseColor("#FFFFFF") else Color.parseColor("#7C4DFF")
+            if (tab == Tab.FAVORITES) Color.WHITE else Color.parseColor("#7C4DFF")
         )
         btnKnown.setTextColor(
-            if (tab == Tab.KNOWN) Color.parseColor("#FFFFFF") else Color.parseColor("#4CAF50")
+            if (tab == Tab.KNOWN) Color.WHITE else Color.parseColor("#4CAF50")
         )
         btnUnknown.setTextColor(
-            if (tab == Tab.UNKNOWN) Color.parseColor("#FFFFFF") else Color.parseColor("#F44336")
+            if (tab == Tab.UNKNOWN) Color.WHITE else Color.parseColor("#F44336")
         )
 
-        // ------------------------
-        // 3) Подставляем данные в адаптер (мок-данные пока)
-        // ------------------------
+        // данные для адаптера
         val list = when (tab) {
-            Tab.FAVORITES -> favoriteWords
-            Tab.KNOWN -> knownWords
-            Tab.UNKNOWN -> unknownWords
+            Tab.FAVORITES -> favoriteWords.map { convert(it) }
+            Tab.KNOWN -> knownWords.map { convert(it) }
+            Tab.UNKNOWN -> unknownWords.map { convert(it) }
         }
+
         adapter.submitList(list)
+    }
+
+    // конвертация WordEntity -> Word для адаптера
+    private fun convert(wordEntity: WordEntity): Word {
+        val status = when {
+            wordEntity.isFavorite -> Status.FAVORITE
+            wordEntity.isLearned -> Status.KNOWN
+            else -> Status.UNKNOWN
+        }
+        return Word(
+            id = wordEntity.id,
+            word = wordEntity.word,
+            translation = wordEntity.translation,
+            topic = wordEntity.topic,
+            status = status
+        )
     }
 
     // ---------------- models ----------------
@@ -141,7 +151,8 @@ class ProfileFragment : Fragment() {
     )
 
     // ---------------- adapter ----------------
-    private inner class WordAdapter(private var items: List<Word>) : RecyclerView.Adapter<WordAdapter.WH>() {
+    private inner class WordAdapter(private var items: List<Word>) :
+        RecyclerView.Adapter<WordAdapter.WH>() {
 
         inner class WH(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val tvWord: TextView = itemView.findViewById(R.id.tvWord)
@@ -151,7 +162,8 @@ class ProfileFragment : Fragment() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WH {
-            val v = LayoutInflater.from(parent.context).inflate(R.layout.item_word, parent, false)
+            val v = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_word, parent, false)
             return WH(v)
         }
 
@@ -177,7 +189,6 @@ class ProfileFragment : Fragment() {
 
         override fun getItemCount(): Int = items.size
 
-        // Можно заменить позже на DiffUtil, но пока для теста так удобно.
         fun submitList(list: List<Word>) {
             this.items = list
             notifyDataSetChanged()

@@ -28,12 +28,16 @@ class WordsAdapter(
 
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
         val word = words[position]
+
         holder.icon.text = word.icon
         holder.title.text = word.word
-        holder.category.text = if (word.isLearned) "Выучено" else "Не выучено"
+        holder.category.text = when {
+            word.isFavorite -> "♥ Избранное"
+            word.isLearned -> "✔ Выучено"
+            else -> "✖ Не выучено"
+        }
         holder.difficulty.text = "• ${word.difficulty}"
 
-        // Клик на элемент
         holder.itemView.setOnClickListener {
             onWordClick(word)
         }
