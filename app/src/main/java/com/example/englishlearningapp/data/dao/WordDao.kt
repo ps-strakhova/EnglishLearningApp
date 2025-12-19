@@ -56,8 +56,6 @@ interface WordDao {
         example: String
     )
 
-    @Query("UPDATE words SET isFavorite = :isFavorite WHERE id = :id")
-    suspend fun updateFavorite(id: Int, isFavorite: Boolean)
 
     @Query("UPDATE words SET isLearned = :isLearned WHERE id = :id")
     suspend fun updateLearned(id: Int, isLearned: Boolean)
@@ -67,5 +65,17 @@ interface WordDao {
 
     @Query("SELECT * FROM words WHERE isLearned = :learned")
     suspend fun getWordsByLearned(learned: Boolean): List<WordEntity>
+
+    @Query("SELECT * FROM words")
+    suspend fun getAllWords(): List<WordEntity>
+
+    @Query("SELECT * FROM words WHERE isFavorite = 1")
+    suspend fun getFavoriteWords(): List<WordEntity>
+
+    @Query("UPDATE words SET isFavorite = :isFavorite WHERE id = :id")
+    suspend fun updateFavorite(id: Int, isFavorite: Boolean)
+
+    @Query("SELECT * FROM words WHERE isLearned = 0")
+    suspend fun getUnknownWords(): List<WordEntity>
 
 }

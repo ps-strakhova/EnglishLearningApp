@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -16,11 +16,10 @@ import com.example.englishlearningapp.data.model.WordEntity
 import com.example.englishlearningapp.data.repository.WordRepository
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.launch
-import android.widget.ImageView
 
 class WordCardFragment : Fragment() {
 
-    // все view
+    // Все view
     private lateinit var tvWordIndex: TextView
     private lateinit var btnClose: TextView
     private lateinit var btnFavorite: ImageView
@@ -87,6 +86,7 @@ class WordCardFragment : Fragment() {
                 )
             }
         }
+
         // Переворот карточки
         cardWord.setOnClickListener {
             val word = words.getOrNull(currentIndex) ?: return@setOnClickListener
@@ -120,12 +120,13 @@ class WordCardFragment : Fragment() {
         btnPrev.setOnClickListener { showWord(currentIndex - 1) }
         btnNext.setOnClickListener { showWord(currentIndex + 1) }
 
+        // ===== Добавляем диалоги для Know / Don't Know =====
         btnDontKnow.setOnClickListener {
             val word = words.getOrNull(currentIndex) ?: return@setOnClickListener
             lifecycleScope.launch {
                 repository.setLearned(word, false)
                 word.isLearned = false
-                showWord(currentIndex + 1)
+                showWordStatusDialog("Слово добавлено в словарь новых")
             }
         }
 
@@ -134,7 +135,7 @@ class WordCardFragment : Fragment() {
             lifecycleScope.launch {
                 repository.setLearned(word, true)
                 word.isLearned = true
-                showWord(currentIndex + 1)
+                showWordStatusDialog("Слово добавлено в словарь знакомых")
             }
         }
 
@@ -205,5 +206,17 @@ class WordCardFragment : Fragment() {
             dot.setTextColor(if (i == currentIndex) 0xFF7C4DFF.toInt() else 0xFFB0B0B0.toInt())
         }
     }
-}
 
+    // Метод для показа диалога при Know / Don't Know
+    private fun showWordStatusDialog(message: String) {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        builder.setMessage(message)
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                // Переходим к следующему слову после закрытия диалога
+                showWord(currentIndex + 1)
+            }
+            .setCancelable(false)
+            .show()
+    }
+}

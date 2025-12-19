@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/pad_screen">
+
+        <!-- Крестик закрытия -->
+        <TextView
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="✕"
+            android:textSize="20sp"
+            android:textColor="#9E9E9E"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_margin="12dp"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <!-- Заголовок -->
+        <TextView
+            android:id="@+id/tvResultTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ваш результат"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_main"
+            android:gravity="center"
+            android:layout_marginTop="16dp" />
+
+        <!-- Карточка с диаграммой -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="20dp">
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/testResultChart"
+                android:layout_width="220dp"
+                android:layout_height="220dp"
+                android:layout_gravity="center" />
+        </LinearLayout>
+
+        <!-- Заголовок ошибок -->
+        <TextView
+            android:id="@+id/tvErrorsTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ошибки"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_main"
+            android:layout_marginTop="28dp"/>
+
+        <TextView
+            android:id="@+id/textSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Добавляйте слова в раздел новых, чтобы закрепить позже"
+            android:textColor="@color/text_muted"
+            android:textSize="12sp"/>
+
+
+        <!-- Контейнер карточек -->
+        <LinearLayout
+            android:id="@+id/errorsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Кнопка -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBackToMain"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Вернуться к тестам"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#6C4DFF"
+            app:cornerRadius="18dp"
+            android:layout_marginTop="28dp"/>
+
+    </LinearLayout>
+
+</ScrollView>

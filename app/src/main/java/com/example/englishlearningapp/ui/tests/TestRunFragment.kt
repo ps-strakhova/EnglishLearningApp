@@ -4,14 +4,15 @@ import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.example.englishlearningapp.R
 import com.example.englishlearningapp.data.database.AppDatabase
 import com.example.englishlearningapp.data.model.Question
 import com.example.englishlearningapp.data.model.WordEntity
+import com.example.englishlearningapp.data.model.WrongAnswer
+import com.example.englishlearningapp.data.repository.WordRepository
+import com.example.englishlearningapp.ui.result.TestResultFragment
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,13 +26,15 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
     private lateinit var btnNext: MaterialButton
     private lateinit var textProgress: TextView
 
+    private val wrongAnswersList = mutableListOf<WrongAnswer>()
     private var currentQuestionIndex = 0
     private var isAnswered = false
-    private var correctAnswersCount = 0
 
     private var testId: String? = null
     private var testTopic: String? = null
     private var questions: List<Question> = emptyList()
+    private var correctAnswers = 0
+    private var wrongAnswers = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,10 +46,8 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
 
         btnNext.setOnClickListener { goToNextQuestion() }
 
-        arguments?.let { bundle ->
-            testId = bundle.getString("testId")
-            testTopic = bundle.getString("testTopic")
-        }
+        testId = arguments?.getString("testId")
+        testTopic = arguments?.getString("testTopic")
 
         lifecycleScope.launch { loadQuestions() }
 
@@ -58,22 +59,30 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
     private suspend fun loadQuestions() {
         withContext(Dispatchers.IO) {
             val dao = AppDatabase.getDatabase(requireContext()).wordDao()
+            val repository = WordRepository(dao)
 
-            val words: List<WordEntity> = when {
-                testTopic != null -> dao.getWordsByTopic(testTopic!!)
-                testId == "all_words" -> dao.getTopics().flatMap { dao.getWordsByTopic(it) }
-                testId == "favorite_words" -> dao.getWordsByFavorite(true)
-                testId == "new_words" -> dao.getWordsByLearned(false)
-                else -> emptyList()
+            // Берём все слова из базы для генерации вариантов
+            val allWords = repository.getAllWords()
+
+            // Слова для текущего теста
+            val words: List<WordEntity> = when (testId) {
+                "all_words" -> allWords
+                "favorite_words" -> repository.getFavoriteWords()
+                "new_words" -> repository.getNewWords()
+                else -> testTopic?.let { repository.getWordsByTopic(it) } ?: emptyList()
             }
 
             val shuffledWords = words.shuffled()
 
-            // Для вариантов берем слова **только из той же темы**, чтобы тест был корректным
-            val allWordsForOptions = if (testTopic != null) words else dao.getTopics().flatMap { dao.getWordsByTopic(it) }
-
             questions = shuffledWords.map { word ->
-                val options = generateOptions(word, allWordsForOptions)
+                // Для тестов по теме используем слова только из этой темы, иначе – все слова
+                val optionsSource = if (testTopic != null) {
+                    repository.getWordsByTopic(testTopic!!) // только слова темы
+                } else {
+                    allWords
+                }
+
+                val options = generateOptions(word, optionsSource)
                 Question(
                     text = "Как переводится слово \"${word.word}\"?",
                     options = options,
@@ -88,21 +97,22 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
                     textProgress.text = ""
                 } else {
                     currentQuestionIndex = 0
-                    correctAnswersCount = 0
                     showQuestion()
                 }
             }
         }
     }
 
-    private fun generateOptions(word: WordEntity, allWords: List<WordEntity>): List<String> {
+    private fun generateOptions(word: WordEntity, sourceWords: List<WordEntity>): List<String> {
         val options = mutableSetOf(word.translation)
-        // Берем случайные переводы из **той же темы**
-        val candidates = allWords.filter { it.translation != word.translation }
+
+        // Берём 3 случайных неправильных перевода из переданного списка
+        val candidates = sourceWords.filter { it.translation != word.translation }
         while (options.size < 4 && candidates.isNotEmpty()) {
-            val randomWord = candidates[Random.nextInt(candidates.size)]
+            val randomWord = candidates.random()
             options.add(randomWord.translation)
         }
+
         return options.shuffled()
     }
 
@@ -132,7 +142,6 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
             optionView.setOnClickListener {
                 if (isAnswered) return@setOnClickListener
                 isAnswered = true
-                if (optionText == correctAnswer) correctAnswersCount++
                 highlightAnswers(correctAnswer, optionText)
                 btnNext.visibility = View.VISIBLE
             }
@@ -142,6 +151,20 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
     }
 
     private fun highlightAnswers(correctAnswer: String, selectedAnswer: String) {
+        val question = questions[currentQuestionIndex]
+        val isCorrect = correctAnswer == selectedAnswer
+
+        if (isCorrect) correctAnswers++ else {
+            wrongAnswers++
+            wrongAnswersList.add(
+                WrongAnswer(
+                    word = extractWordFromQuestion(question.text),
+                    translation = correctAnswer,
+                    topic = testTopic
+                )
+            )
+        }
+
         for (i in 0 until optionsContainer.childCount) {
             val option = optionsContainer.getChildAt(i) as TextView
             option.isClickable = false
@@ -152,32 +175,32 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
         }
     }
 
+    private fun extractWordFromQuestion(text: String): String {
+        return text.substringAfter("\"").substringBefore("\"")
+    }
+
     private fun goToNextQuestion() {
-        currentQuestionIndex++
-        if (currentQuestionIndex < questions.size) {
+        if (currentQuestionIndex < questions.size - 1) {
+            currentQuestionIndex++
             showQuestion()
         } else {
-            showResultDialog()
+            openResultScreen()
         }
     }
 
-    private fun showResultDialog() {
-        val totalQuestions = questions.size
-        AlertDialog.Builder(requireContext())
-            .setTitle("Результат теста")
-            .setMessage("Вы ответили правильно на $correctAnswersCount из $totalQuestions ${questionsWord(totalQuestions)}")
-            .setPositiveButton("Пройти заново") { _, _ -> restartTest() }
-            .setNegativeButton("Вернуться на главную") { _, _ ->
-                findNavController().navigate(R.id.homeFragment)
+    private fun openResultScreen() {
+        val fragment = TestResultFragment().apply {
+            arguments = Bundle().apply {
+                putInt("correct", correctAnswers)
+                putInt("wrong", wrongAnswers)
+                putSerializable("wrongWords", ArrayList(wrongAnswersList))
             }
-            .setCancelable(false)
-            .show()
-    }
+        }
 
-    private fun restartTest() {
-        currentQuestionIndex = 0
-        correctAnswersCount = 0
-        showQuestion()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.nav_host_fragment, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun questionsWord(count: Int): String {

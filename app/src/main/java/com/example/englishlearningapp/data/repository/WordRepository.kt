@@ -6,14 +6,15 @@ import com.example.englishlearningapp.data.model.WordEntity
 
 class WordRepository(private val dao: WordDao) {
 
+
     // =====================
     // ====== SEED =========
     // =====================
     suspend fun seedOrUpdate(words: List<WordEntity>) {
-        // 1. Добавляем новые слова (если их ещё нет)
+        // Добавляем новые слова (если их ещё нет)
         dao.insertWordsIgnore(words)
 
-        // 2. Обновляем мета-данные существующих слов
+        // Обновляем мета-данные существующих слов
         words.forEach { word ->
             dao.updateWordMeta(
                 word = word.word,
@@ -29,23 +30,9 @@ class WordRepository(private val dao: WordDao) {
     // =====================
     // ====== STATS ========
     // =====================
-    suspend fun getTotalWordsCount(): Int {
-        return dao.getTotalWordsCount()
-    }
+    suspend fun getTotalWordsCount(): Int = dao.getTotalWordsCount()
 
-    suspend fun getAllWords(): List<WordEntity> {
-        val topics = dao.getTopics()
-        val list = mutableListOf<WordEntity>()
-        topics.forEach { topic ->
-            list.addAll(dao.getWordsByTopic(topic))
-        }
-        return list
-    }
-
-
-    suspend fun getLearnedWordsCount(): Int {
-        return dao.getLearnedWordsCount()
-    }
+    suspend fun getLearnedWordsCount(): Int = dao.getLearnedWordsCount()
 
     // =====================
     // ====== TOPICS =======
@@ -53,9 +40,8 @@ class WordRepository(private val dao: WordDao) {
     suspend fun getTopics(): List<TopicItem> {
         return dao.getTopics().map { topic ->
             val wordsInTopic = dao.getWordsByTopic(topic)
-            val icon = wordsInTopic.firstOrNull()?.icon ?: "📚"
             TopicItem(
-                iconTopic = icon,
+                iconTopic = wordsInTopic.firstOrNull()?.icon ?: "📚",
                 title = topic,
                 totalWords = wordsInTopic.size,
                 learnedWords = dao.getLearnedWordsCountByTopic(topic)
@@ -66,28 +52,18 @@ class WordRepository(private val dao: WordDao) {
     // =====================
     // ====== WORDS ========
     // =====================
-    suspend fun getWordsByTopic(topic: String): List<WordEntity> {
-        return dao.getWordsByTopic(topic)
-    }
+    suspend fun getWordsByTopic(topic: String): List<WordEntity> = dao.getWordsByTopic(topic)
 
-    suspend fun setFavorite(word: WordEntity, favorite: Boolean) {
-        dao.updateFavorite(word.id, favorite)
-    }
+    suspend fun setFavorite(word: WordEntity, favorite: Boolean) = dao.updateFavorite(word.id, favorite)
+    suspend fun getFavoriteWords(): List<WordEntity> = dao.getFavoriteWords()
+    suspend fun setLearned(word: WordEntity, learned: Boolean) = dao.updateLearned(word.id, learned)
 
-    suspend fun setLearned(word: WordEntity, learned: Boolean) {
-        dao.updateLearned(word.id, learned)
-    }
+    suspend fun getLearnedWords(): List<WordEntity> = dao.getWordsByLearned(true)
 
-    suspend fun getFavoriteWords(): List<WordEntity> {
-        return dao.getWordsByFavorite(true)
-    }
+    suspend fun getUnknownWords(): List<WordEntity> = dao.getWordsByLearned(false)
 
-    suspend fun getLearnedWords(): List<WordEntity> {
-        return dao.getWordsByLearned(true)
-    }
+    suspend fun getAllWords(): List<WordEntity> = dao.getAllWords() // теперь использует DAO напрямую
 
-    suspend fun getUnknownWords(): List<WordEntity> {
-        return dao.getWordsByLearned(false)
-    }
+    suspend fun getNewWords(): List<WordEntity> = dao.getUnknownWords() // теперь использует DAO напрямую
 
 }
