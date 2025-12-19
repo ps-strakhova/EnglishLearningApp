@@ -38,7 +38,7 @@ class WordsAdapter(
         holder.category.text = when {
             word.isFavorite -> "♥ Избранное"
             word.isLearned -> "Выучено"
-            else -> "Не выучено"
+            else -> "Новое"
         }
         holder.difficulty.text = "• ${word.difficulty}"
 

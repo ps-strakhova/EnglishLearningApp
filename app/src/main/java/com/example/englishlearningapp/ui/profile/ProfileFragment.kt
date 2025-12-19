@@ -23,7 +23,6 @@ class ProfileFragment : Fragment() {
     private lateinit var repository: WordRepository
     private var favoriteWords = listOf<WordEntity>()
     private var knownWords = listOf<WordEntity>()
-    private var unknownWords = listOf<WordEntity>()
 
     private lateinit var recycler: RecyclerView
     private lateinit var adapter: WordAdapter
@@ -31,7 +30,6 @@ class ProfileFragment : Fragment() {
     // tabs
     private lateinit var btnFavorites: Button
     private lateinit var btnKnown: Button
-    private lateinit var btnUnknown: Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,7 +60,6 @@ class ProfileFragment : Fragment() {
         // tabs
         btnFavorites = view.findViewById(R.id.btnFavorites)
         btnKnown = view.findViewById(R.id.btnKnown)
-        btnUnknown = view.findViewById(R.id.btnUnknown)
 
         // RecyclerView
         recycler = view.findViewById(R.id.rvWords)
@@ -78,7 +75,6 @@ class ProfileFragment : Fragment() {
         lifecycleScope.launch {
             favoriteWords = repository.getFavoriteWords()
             knownWords = repository.getLearnedWords()
-            unknownWords = repository.getUnknownWords()
 
             // обновляем таб по умолчанию
             selectTab(Tab.FAVORITES)
@@ -86,20 +82,17 @@ class ProfileFragment : Fragment() {
             // обновляем счетчики на кнопках
             btnFavorites.text = "Favorites (${favoriteWords.size})"
             btnKnown.text = "Known (${knownWords.size})"
-            btnUnknown.text = "Don't Know (${unknownWords.size})"
         }
 
         // default tab
         btnFavorites.setOnClickListener { selectTab(Tab.FAVORITES) }
         btnKnown.setOnClickListener { selectTab(Tab.KNOWN) }
-        btnUnknown.setOnClickListener { selectTab(Tab.UNKNOWN) }
     }
 
     private fun selectTab(tab: Tab) {
         // выделяем кнопку
         btnFavorites.isSelected = (tab == Tab.FAVORITES)
         btnKnown.isSelected = (tab == Tab.KNOWN)
-        btnUnknown.isSelected = (tab == Tab.UNKNOWN)
 
         // цвет текста
         btnFavorites.setTextColor(
@@ -108,26 +101,22 @@ class ProfileFragment : Fragment() {
         btnKnown.setTextColor(
             if (tab == Tab.KNOWN) Color.WHITE else Color.parseColor("#4CAF50")
         )
-        btnUnknown.setTextColor(
-            if (tab == Tab.UNKNOWN) Color.WHITE else Color.parseColor("#F44336")
-        )
 
         // данные для адаптера
         val list = when (tab) {
-            Tab.FAVORITES -> favoriteWords.map { convert(it) }
-            Tab.KNOWN -> knownWords.map { convert(it) }
-            Tab.UNKNOWN -> unknownWords.map { convert(it) }
+            Tab.FAVORITES -> favoriteWords.map { convert(it, Tab.FAVORITES) }
+            Tab.KNOWN -> knownWords.map { convert(it, Tab.KNOWN) }
         }
 
         adapter.submitList(list)
     }
 
+
     // конвертация WordEntity -> Word для адаптера
-    private fun convert(wordEntity: WordEntity): Word {
-        val status = when {
-            wordEntity.isFavorite -> Status.FAVORITE
-            wordEntity.isLearned -> Status.KNOWN
-            else -> Status.UNKNOWN
+    private fun convert(wordEntity: WordEntity, tab: Tab): Word {
+        val status = when (tab) {
+            Tab.FAVORITES -> Status.FAVORITE
+            Tab.KNOWN -> Status.KNOWN
         }
         return Word(
             id = wordEntity.id,
@@ -138,9 +127,11 @@ class ProfileFragment : Fragment() {
         )
     }
 
+
+
     // ---------------- models ----------------
-    private enum class Tab { FAVORITES, KNOWN, UNKNOWN }
-    private enum class Status { FAVORITE, KNOWN, UNKNOWN }
+    private enum class Tab { FAVORITES, KNOWN }
+    private enum class Status { FAVORITE, KNOWN }
 
     private data class Word(
         val id: Int,
@@ -173,19 +164,26 @@ class ProfileFragment : Fragment() {
             holder.tvTranslation.text = w.translation
             holder.tvTopic.text = w.topic
 
+            // отображение статуса
             holder.ivStatus.text = when (w.status) {
                 Status.FAVORITE -> "♥"
                 Status.KNOWN -> "✔"
-                Status.UNKNOWN -> "✖"
             }
 
             val emojiColor = when (w.status) {
-                Status.FAVORITE -> Color.parseColor("#FF9800")
-                Status.KNOWN -> Color.parseColor("#4CAF50")
-                Status.UNKNOWN -> Color.parseColor("#F44336")
+                Status.FAVORITE -> Color.parseColor("#FF9800") // оранжевое сердечко для Favorites
+                Status.KNOWN -> Color.parseColor("#4CAF50")   // зеленая галочка для Known
             }
+
             holder.ivStatus.setTextColor(emojiColor)
+
+            // если слово в Known, не показываем сердечко
+            if (w.status == Status.KNOWN) {
+                holder.ivStatus.text = "✔"
+                holder.ivStatus.setTextColor(Color.parseColor("#4CAF50"))
+            }
         }
+
 
         override fun getItemCount(): Int = items.size
 

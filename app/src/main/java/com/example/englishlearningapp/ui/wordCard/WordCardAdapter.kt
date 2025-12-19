@@ -28,7 +28,7 @@ class WordCardAdapter(private val words: List<WordEntity>) :
         val word = words[position]
         holder.icon.text = word.icon
         holder.title.text = word.word
-        holder.category.text = if (word.isLearned) "Выучено" else "Не выучено"
+        holder.category.text = if (word.isLearned) "Выучено" else "Новое"
         holder.difficulty.text = "• ${word.difficulty}"
     }
 

@@ -39,8 +39,7 @@
 
                 <TextView
                     android:id="@+id/tvWord"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Word"
                     android:textSize="17sp"
@@ -60,7 +59,7 @@
                     android:paddingBottom="4dp"
                     android:background="@drawable/tag_bg"
                     android:textColor="#7C4DFF"
-                    android:layout_marginStart="8dp"/>
+                    android:layout_marginStart="16dp"/>
             </LinearLayout>
 
             <TextView
@@ -72,5 +71,18 @@
                 android:textColor="#757575"
                 android:layout_marginTop="1dp"/>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="✖"
+            android:textSize="18sp"
+            android:textColor="#757575"
+            android:paddingTop="6dp"
+            android:layout_marginEnd="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_gravity="end" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
