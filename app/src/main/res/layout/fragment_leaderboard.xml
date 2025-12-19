@@ -1,15 +1,338 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/leaderboard_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@android:color/white"
+    android:fillViewport="true">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Leaderboard"
-        android:textSize="24sp"/>
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="24dp">
 
-</FrameLayout>
+        <!-- Header (как в profile) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="16dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvLeaderboardTitle"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Leaderboard"
+                android:textSize="28sp"
+                android:textColor="#1A1A1A"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium" />
+
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvLeaderboardSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your ranking among learners"
+            android:textSize="14sp"
+            android:textColor="#9E9E9E"
+            android:layout_marginTop="8dp" />
+
+        <!-- Current User Stats Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/cardCurrentUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    android:clipToPadding="false"
+                    android:background="@drawable/profile_gradient"
+                    android:layout_marginBottom="8dp"
+                    android:clipToOutline="true">
+
+                    <!-- top row: avatar + title and rank number -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:id="@+id/tvCurrentAvatar"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:gravity="center"
+                                android:text="😊"
+                                android:textSize="32sp"
+                                android:background="@drawable/avatar_bg"
+                                android:fontFamily="sans-serif"
+                                android:layout_marginEnd="12dp" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tvYourRankLabel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Your Rank"
+                                    android:textSize="20sp"
+                                    android:textStyle="normal"
+                                    android:textColor="#FFFFFF"
+                                    android:fontFamily="sans-serif-medium"/>
+
+                                <TextView
+                                    android:id="@+id/tvYourRankSubtitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Keep climbing!"
+                                    android:textSize="14sp"
+                                    android:textColor="#E6FFFFFF"
+                                    android:layout_marginTop="2dp"/>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvYourRankNumber"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="#4"
+                            android:textSize="40sp"
+                            android:textColor="#FFFFFF"
+                            android:fontFamily="sans-serif-medium" />
+                    </LinearLayout>
+
+                    <!-- divider -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#33FFFFFF"
+                        android:layout_marginTop="4dp" />
+
+                    <!-- stats row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="12dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/tvCurrentPoints"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="2100"
+                                android:textSize="20sp"
+                                android:textColor="#FFFFFF"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Points"
+                                android:textSize="12sp"
+                                android:textColor="#E6FFFFFF"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/tvCurrentWords"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="755"
+                                android:textSize="20sp"
+                                android:textColor="#FFFFFF"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Words"
+                                android:textSize="12sp"
+                                android:textColor="#E6FFFFFF"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/tvCurrentStreak"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="28"
+                                android:textSize="20sp"
+                                android:textColor="#FFFFFF"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Day Streak"
+                                android:textSize="12sp"
+                                android:textColor="#E6FFFFFF"/>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Tabs: This Week / All Time -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"
+            android:orientation="horizontal"
+            android:gravity="start">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnThisWeek"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+
+                android:text="This week"
+                android:textSize="14sp"
+                android:textAllCaps="false"
+
+                android:background="@drawable/tab_favorites"
+                android:textColor="@color/tab_favorites_text"
+
+                android:gravity="center_vertical|center_horizontal"
+                android:paddingStart="10dp"
+                android:paddingEnd="12dp"
+
+                android:layout_marginEnd="4dp"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnAllTime"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+
+                android:text="All time"
+                android:textSize="14sp"
+                android:textAllCaps="false"
+
+                android:background="@drawable/tab_favorites"
+                android:textColor="@color/tab_favorites_text"
+
+                android:gravity="center_vertical|center_horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+
+                android:layout_marginEnd="4dp"/>
+
+        </LinearLayout>
+
+        <!-- Leaderboard RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvLeaderboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"/>
+
+        <!-- Bottom info card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:background="@drawable/bottom_info_bg"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:background="@drawable/icon_orange_bg"
+                    android:layout_marginEnd="12dp">
+
+                    <!-- placeholder icon: замените на vector drawable -->
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_trending_up_white" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Climb the ranks!"
+                        android:textSize="14sp"
+                        android:textColor="#1A1A1A"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Complete daily goals and maintain your streak to earn more points"
+                        android:textSize="13sp"
+                        android:textColor="#757575"
+                        android:layout_marginTop="4dp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

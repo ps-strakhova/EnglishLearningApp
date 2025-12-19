@@ -1,0 +1,231 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Номер слова сверху -->
+    <TextView
+        android:id="@+id/tvWordIndex"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1/8"
+        android:textSize="16sp"
+        android:textColor="#7C4DFF"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="17dp"/>
+
+    <!-- Крестик закрытия -->
+    <TextView
+        android:id="@+id/btnClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="✕"
+        android:textSize="20sp"
+        android:textColor="#9E9E9E"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="12dp"/>
+
+    <!-- Сердечко "любимые" -->
+    <ImageView
+        android:id="@+id/btnFavorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:paddingTop="6dp"
+        android:src="@drawable/heart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/heart" />
+
+    <!-- Карточка -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardWord"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="8dp"
+        app:strokeWidth="2dp"
+        app:strokeColor="#FFFFFF"
+        app:layout_constraintTop_toBottomOf="@id/tvWordIndex"
+        app:layout_constraintBottom_toTopOf="@id/navigationLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        android:backgroundTint="#FFFFFF">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Эмоджи -->
+            <TextView
+                android:id="@+id/ivStatusEmoji"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:text="📚"
+                android:textSize="32sp"/>
+
+            <!-- Английское слово -->
+            <TextView
+                android:id="@+id/tvWord"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Word"
+                android:textColor="#1A1A1A"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Перевод -->
+            <TextView
+                android:id="@+id/tvTranslation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Translation"
+                android:textColor="#7C4DFF"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Пример -->
+            <TextView
+                android:id="@+id/tvExample"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Example sentence"
+                android:textColor="#757575"
+                android:textSize="14sp"
+                android:textStyle="italic"
+                android:visibility="gone"
+                android:layout_marginBottom="4dp"/>
+
+            <!-- Подсказка переворота -->
+            <TextView
+                android:id="@+id/tvFlipHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Нажми, чтобы перевернуть"
+                android:textColor="#757575"
+                android:textSize="14sp"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Навигация (исчезает при перевороте) -->
+    <LinearLayout
+        android:id="@+id/navigationLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="16dp">
+
+        <!-- Левая кнопка -->
+        <TextView
+            android:id="@+id/btnPrev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:width="100dp"
+            android:text="&lt; Назад"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="@drawable/bg_chip_grey"
+            android:padding="12dp"
+            android:layout_marginStart="15dp"/>
+
+        <!-- Пробел для распределения -->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
+
+        <!-- Центральные точки -->
+        <LinearLayout
+            android:id="@+id/dotsLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"/>
+
+        <!-- Пробел для распределения -->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
+
+        <!-- Правая кнопка -->
+        <TextView
+            android:id="@+id/btnNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:width="100dp"
+            android:text="Вперёд >"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="@drawable/bg_chip_grey"
+            android:padding="12dp"
+            android:layout_marginEnd="15dp"/>
+    </LinearLayout>
+
+
+    <!-- Кнопки "Don't know" и "Know" -->
+    <!-- Кнопки "Don't know" и "Know" заменены на TextView -->
+    <LinearLayout
+        android:id="@+id/flipButtonsLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:padding="8dp"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/btnDontKnow"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Don't know"
+            android:textColor="@color/text_muted"
+            android:gravity="center"
+            android:background="@drawable/bg_chip_muted"
+            android:textSize="16sp"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <TextView
+            android:id="@+id/btnKnow"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Know"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:background="@drawable/bg_chip_know"
+            android:textSize="16sp"
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:focusable="true"/>
+</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
