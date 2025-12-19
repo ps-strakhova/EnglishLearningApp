@@ -1,0 +1,14 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Цвет карточки -->
+    <solid android:color="#FFFFFF"/>
+
+    <!-- Рамка -->
+    <stroke
+        android:width="1dp"
+        android:color="#F0F0F0"/>
+
+    <!-- Скругление углов (rounded-2xl ≈ 16dp) -->
+    <corners android:radius="16dp"/>
+
+</shape>
