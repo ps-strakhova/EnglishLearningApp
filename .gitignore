@@ -1,15 +1,22 @@
+# Gradle / Android
 *.iml
 .gradle
-/local.properties
+/build
+/captures
+.externalNativeBuild
+.cxx
+
+# Local config
+local.properties
+
+# IntelliJ / Android Studio
+/.idea/
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
+
+# OS
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.propertiesgit rm --cached local.properties
