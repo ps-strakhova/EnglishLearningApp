@@ -11,6 +11,20 @@
         android:orientation="vertical"
         android:padding="@dimen/pad_screen">
 
+        <!-- Крестик закрытия -->
+        <TextView
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="✕"
+            android:textSize="20sp"
+            android:textColor="#9E9E9E"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_margin="12dp"
+            android:clickable="true"
+            android:focusable="true"/>
+
         <!-- Прогресс -->
         <TextView
             android:id="@+id/textProgress"

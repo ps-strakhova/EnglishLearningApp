@@ -9,6 +9,8 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.englishlearningapp.R
 import com.google.android.material.button.MaterialButton
+import androidx.navigation.fragment.findNavController
+
 
 class TestRunFragment : Fragment() {
 
@@ -55,6 +57,12 @@ class TestRunFragment : Fragment() {
         }
 
         showQuestion()
+
+        val btnClose = view.findViewById<TextView>(R.id.btnClose)
+
+        btnClose.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     // ===== ПОКАЗ ВОПРОСА =====
