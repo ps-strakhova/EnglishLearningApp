@@ -1,18 +1,21 @@
 package com.example.englishlearningapp.ui.tests
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.englishlearningapp.R
+import com.example.englishlearningapp.data.database.AppDatabase
+import com.example.englishlearningapp.data.model.WordEntity
 import com.google.android.material.button.MaterialButton
-import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
-
-class TestRunFragment : Fragment() {
+class TestRunFragment : Fragment(R.layout.fragment_test_run) {
 
     private lateinit var textQuestion: TextView
     private lateinit var optionsContainer: LinearLayout
@@ -21,27 +24,9 @@ class TestRunFragment : Fragment() {
     private var currentQuestionIndex = 0
     private var isAnswered = false
 
-    // ВРЕМЕННЫЕ тестовые данные (позже заменим на реальные из БД)
-    private val questions = listOf(
-        Question(
-            text = "Как переводится слово \"Apple\"?",
-            options = listOf("Яблоко", "Банан", "Груша", "Апельсин"),
-            correctAnswer = "Яблоко"
-        ),
-        Question(
-            text = "Как переводится слово \"Car\"?",
-            options = listOf("Поезд", "Самолёт", "Машина", "Корабль"),
-            correctAnswer = "Машина"
-        )
-    )
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_test_run, container, false)
-    }
+    private var testId: String? = null
+    private var testTopic: String? = null
+    private var questions: List<Question> = emptyList()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,52 +35,100 @@ class TestRunFragment : Fragment() {
         optionsContainer = view.findViewById(R.id.optionsContainer)
         btnNext = view.findViewById(R.id.btnNext)
 
-        btnNext.visibility = View.GONE
+        btnNext.setOnClickListener { goToNextQuestion() }
 
-        btnNext.setOnClickListener {
-            goToNextQuestion()
+        arguments?.let { bundle ->
+            testId = bundle.getString("testId")
+            testTopic = bundle.getString("testTopic")
         }
 
-        showQuestion()
+        lifecycleScope.launch { loadQuestions() }
 
         val btnClose = view.findViewById<TextView>(R.id.btnClose)
-
         btnClose.setOnClickListener {
-            findNavController().popBackStack()
+            requireActivity().supportFragmentManager.popBackStack()
         }
     }
 
-    // ===== ПОКАЗ ВОПРОСА =====
+    private suspend fun loadQuestions() {
+        withContext(Dispatchers.IO) {
+            val dao = AppDatabase.getDatabase(requireContext()).wordDao()
+
+            val words: List<WordEntity> = if (testTopic == null && testId == "all_words") {
+                val topics = dao.getTopics()
+                val list = mutableListOf<WordEntity>()
+                topics.forEach { topic ->
+                    list.addAll(dao.getWordsByTopic(topic))
+                }
+                list
+            } else if (testId == "favorite_words") {
+                dao.getWordsByFavorite(true)
+            } else if (testId == "new_words") {
+                dao.getWordsByLearned(false)
+            } else if (testTopic != null) {
+                dao.getWordsByTopic(testTopic!!)
+            } else {
+                emptyList()
+            }
+
+            // Весь список слов нужен для генерации случайных вариантов
+            val allWordsForOptions = dao.getTopics().flatMap { topic ->
+                dao.getWordsByTopic(topic)
+            }
+
+            questions = words.map { word ->
+                val options = generateOptions(word, allWordsForOptions)
+                Question(word.word, options, word.translation)
+            }
+
+
+            questions = words.map { word ->
+                val options = generateOptions(word, allWordsForOptions)
+                Question(word.word, options, word.translation)
+            }
+
+            withContext(Dispatchers.Main) {
+                if (questions.isEmpty()) {
+                    textQuestion.text = "Нет вопросов для этого теста"
+                    btnNext.visibility = View.GONE
+                } else {
+                    currentQuestionIndex = 0
+                    showQuestion()
+                }
+            }
+        }
+    }
+
+    private fun generateOptions(word: WordEntity, allWords: List<WordEntity>): List<String> {
+        val options = mutableSetOf(word.translation)
+
+        while (options.size < 4 && allWords.isNotEmpty()) {
+            val randomWord = allWords[Random.nextInt(allWords.size)]
+            options.add(randomWord.translation)
+        }
+
+        return options.shuffled()
+    }
+
     private fun showQuestion() {
         val question = questions[currentQuestionIndex]
-
         textQuestion.text = question.text
         showOptions(question.options, question.correctAnswer)
     }
 
-    // ===== ПОКАЗ ВАРИАНТОВ =====
-    private fun showOptions(
-        options: List<String>,
-        correctAnswer: String
-    ) {
+    private fun showOptions(options: List<String>, correctAnswer: String) {
         optionsContainer.removeAllViews()
         isAnswered = false
         btnNext.visibility = View.GONE
 
         options.forEach { optionText ->
-            val optionView = layoutInflater.inflate(
-                R.layout.item_option,
-                optionsContainer,
-                false
-            ) as TextView
-
+            val optionView = layoutInflater.inflate(R.layout.item_option, optionsContainer, false) as TextView
             optionView.text = optionText
             optionView.setBackgroundResource(R.drawable.bg_option_default)
 
             optionView.setOnClickListener {
                 if (isAnswered) return@setOnClickListener
                 isAnswered = true
-
                 highlightAnswers(correctAnswer, optionText)
                 btnNext.visibility = View.VISIBLE
             }
@@ -104,46 +137,29 @@ class TestRunFragment : Fragment() {
         }
     }
 
-    // ===== ПОДСВЕТКА =====
-    private fun highlightAnswers(
-        correctAnswer: String,
-        selectedAnswer: String
-    ) {
+    private fun highlightAnswers(correctAnswer: String, selectedAnswer: String) {
         for (i in 0 until optionsContainer.childCount) {
             val option = optionsContainer.getChildAt(i) as TextView
             option.isClickable = false
-
             when {
-                option.text == correctAnswer -> {
-                    option.setBackgroundResource(R.drawable.bg_option_correct)
-                }
-                option.text == selectedAnswer -> {
-                    option.setBackgroundResource(R.drawable.bg_option_wrong)
-                }
+                option.text == correctAnswer -> option.setBackgroundResource(R.drawable.bg_option_correct)
+                option.text == selectedAnswer -> option.setBackgroundResource(R.drawable.bg_option_wrong)
             }
         }
     }
 
-    // ===== ПЕРЕХОД ДАЛЬШЕ =====
     private fun goToNextQuestion() {
         currentQuestionIndex++
-
         if (currentQuestionIndex < questions.size) {
             showQuestion()
         } else {
-            showResultScreen()
+            textQuestion.text = "Тест завершён 🎉"
+            optionsContainer.removeAllViews()
+            btnNext.visibility = View.GONE
         }
-    }
-
-    // ===== РЕЗУЛЬТАТ (ЗАГЛУШКА) =====
-    private fun showResultScreen() {
-        textQuestion.text = "Тест завершён 🎉"
-        optionsContainer.removeAllViews()
-        btnNext.visibility = View.GONE
     }
 }
 
-// ===== МОДЕЛЬ ВОПРОСА =====
 data class Question(
     val text: String,
     val options: List<String>,

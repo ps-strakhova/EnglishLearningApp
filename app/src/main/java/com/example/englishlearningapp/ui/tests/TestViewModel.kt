@@ -1,12 +1,9 @@
 package com.example.englishlearningapp.ui.tests
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.englishlearningapp.data.model.TestItem
-import com.example.englishlearningapp.data.repository.WordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+import com.example.englishlearningapp.data.model.TestItem
 
 class TestsViewModel : ViewModel() {
 
@@ -15,20 +12,10 @@ class TestsViewModel : ViewModel() {
 
     init {
         _tests.value = listOf(
-            TestItem(
-                id = "test_fruits",
-                title = "Тест: Фрукты",
-                topic = "Фрукты",
-                icon = "🍎",
-                questionsCount = 10
-            ),
-            TestItem(
-                id = "test_all",
-                title = "Общий тест",
-                topic = null,
-                icon = "⭐",
-                questionsCount = 20
-            )
+            TestItem(id = "test_all_words", title = "По всем словам", topic = null, icon = "⭐", questionsCount = 0),
+            TestItem(id = "test_favorites", title = "По «избранным» словам", topic = null, icon = "❤️", questionsCount = 0),
+            TestItem(id = "test_new", title = "По «новым» словам", topic = null, icon = "🆕", questionsCount = 0),
+            TestItem(id = "test_all_topics", title = "По всем темам", topic = null, icon = "📚", questionsCount = 0)
         )
     }
 }

@@ -18,11 +18,14 @@
             app:destination="@id/testRunFragment" />
     </fragment>
 
-    <!-- ✅ ФРАГМЕНТ ЗАПУСКА ТЕСТА -->
     <fragment
         android:id="@+id/testRunFragment"
         android:name="com.example.englishlearningapp.ui.tests.TestRunFragment"
-        android:label="Test Run" />
+        android:label="Test Run">
+        <argument
+            android:name="testId"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/topicsFragment"

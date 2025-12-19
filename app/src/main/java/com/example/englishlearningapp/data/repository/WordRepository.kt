@@ -33,6 +33,16 @@ class WordRepository(private val dao: WordDao) {
         return dao.getTotalWordsCount()
     }
 
+    suspend fun getAllWords(): List<WordEntity> {
+        val topics = dao.getTopics()
+        val list = mutableListOf<WordEntity>()
+        topics.forEach { topic ->
+            list.addAll(dao.getWordsByTopic(topic))
+        }
+        return list
+    }
+
+
     suspend fun getLearnedWordsCount(): Int {
         return dao.getLearnedWordsCount()
     }
@@ -41,15 +51,21 @@ class WordRepository(private val dao: WordDao) {
     // ====== TOPICS =======
     // =====================
     suspend fun getTopics(): List<TopicItem> {
+        // получаем все названия тем
         return dao.getTopics().map { topic ->
+            // пытаемся взять первую иконку из слов этой темы
+            val word = dao.getWordsByTopic(topic).firstOrNull()
+            val icon = word?.icon ?: "📚" // если слов нет, ставим 📚
+
             TopicItem(
-                iconTopic = "📚", // позже можно заменить на map
+                iconTopic = icon,
                 title = topic,
                 totalWords = dao.getWordsCountByTopic(topic),
                 learnedWords = dao.getLearnedWordsCountByTopic(topic)
             )
         }
     }
+
 
     // =====================
     // ====== WORDS ========
