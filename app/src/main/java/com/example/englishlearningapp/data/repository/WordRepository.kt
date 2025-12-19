@@ -51,21 +51,17 @@ class WordRepository(private val dao: WordDao) {
     // ====== TOPICS =======
     // =====================
     suspend fun getTopics(): List<TopicItem> {
-        // получаем все названия тем
         return dao.getTopics().map { topic ->
-            // пытаемся взять первую иконку из слов этой темы
-            val word = dao.getWordsByTopic(topic).firstOrNull()
-            val icon = word?.icon ?: "📚" // если слов нет, ставим 📚
-
+            val wordsInTopic = dao.getWordsByTopic(topic)
+            val icon = wordsInTopic.firstOrNull()?.icon ?: "📚"
             TopicItem(
                 iconTopic = icon,
                 title = topic,
-                totalWords = dao.getWordsCountByTopic(topic),
+                totalWords = wordsInTopic.size,
                 learnedWords = dao.getLearnedWordsCountByTopic(topic)
             )
         }
     }
-
 
     // =====================
     // ====== WORDS ========

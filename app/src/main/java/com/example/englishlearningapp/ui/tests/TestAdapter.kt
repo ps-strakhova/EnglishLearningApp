@@ -31,11 +31,24 @@ class TestsAdapter(
         return VH(view)
     }
 
+    fun questionsWord(count: Int): String {
+        val rem100 = count % 100
+        val rem10 = count % 10
+
+        return when {
+            rem100 in 11..19 -> "вопросов"
+            rem10 == 1 -> "вопрос"
+            rem10 in 2..4 -> "вопроса"
+            else -> "вопросов"
+        }
+    }
+
+
     override fun onBindViewHolder(holder: VH, position: Int) {
         val item = items[position]
         holder.icon.text = item.icon
         holder.title.text = item.title
-        holder.subtitle.text = "${item.questionsCount} вопросов"
+        holder.subtitle.text = "${item.questionsCount} ${questionsWord(item.questionsCount)}"
 
         holder.itemView.setOnClickListener {
             onClick(item)

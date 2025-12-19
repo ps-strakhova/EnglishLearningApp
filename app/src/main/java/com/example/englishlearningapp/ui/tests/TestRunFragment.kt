@@ -20,6 +20,7 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
     private lateinit var textQuestion: TextView
     private lateinit var optionsContainer: LinearLayout
     private lateinit var btnNext: MaterialButton
+    private lateinit var textProgress: TextView
 
     private var currentQuestionIndex = 0
     private var isAnswered = false
@@ -34,6 +35,7 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
         textQuestion = view.findViewById(R.id.textQuestion)
         optionsContainer = view.findViewById(R.id.optionsContainer)
         btnNext = view.findViewById(R.id.btnNext)
+        textProgress = view.findViewById(R.id.textProgress)
 
         btnNext.setOnClickListener { goToNextQuestion() }
 
@@ -54,43 +56,35 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
         withContext(Dispatchers.IO) {
             val dao = AppDatabase.getDatabase(requireContext()).wordDao()
 
-            val words: List<WordEntity> = if (testTopic == null && testId == "all_words") {
-                val topics = dao.getTopics()
-                val list = mutableListOf<WordEntity>()
-                topics.forEach { topic ->
-                    list.addAll(dao.getWordsByTopic(topic))
-                }
-                list
-            } else if (testId == "favorite_words") {
-                dao.getWordsByFavorite(true)
-            } else if (testId == "new_words") {
-                dao.getWordsByLearned(false)
-            } else if (testTopic != null) {
-                dao.getWordsByTopic(testTopic!!)
-            } else {
-                emptyList()
+            val words: List<WordEntity> = when {
+                testTopic == null && testId == "all_words" -> dao.getTopics().flatMap { dao.getWordsByTopic(it) }
+                testId == "favorite_words" -> dao.getWordsByFavorite(true)
+                testId == "new_words" -> dao.getWordsByLearned(false)
+                testTopic != null -> dao.getWordsByTopic(testTopic!!)
+                else -> emptyList()
             }
 
-            // Весь список слов нужен для генерации случайных вариантов
-            val allWordsForOptions = dao.getTopics().flatMap { topic ->
-                dao.getWordsByTopic(topic)
-            }
+            // Перемешиваем слова внутри темы и общий порядок
+            val groupedByTopic = words.groupBy { it.topic ?: "no_topic" }
+            val shuffledWords = groupedByTopic.flatMap { (_, list) -> list.shuffled() }.shuffled()
 
-            questions = words.map { word ->
+            val allWordsForOptions = dao.getTopics().flatMap { dao.getWordsByTopic(it) }
+
+            // Создаем вопросы с полным текстом
+            questions = shuffledWords.map { word ->
                 val options = generateOptions(word, allWordsForOptions)
-                Question(word.word, options, word.translation)
-            }
-
-
-            questions = words.map { word ->
-                val options = generateOptions(word, allWordsForOptions)
-                Question(word.word, options, word.translation)
+                Question(
+                    text = "Как переводится слово \"${word.word}\"?",
+                    options = options,
+                    correctAnswer = word.translation
+                )
             }
 
             withContext(Dispatchers.Main) {
                 if (questions.isEmpty()) {
                     textQuestion.text = "Нет вопросов для этого теста"
                     btnNext.visibility = View.GONE
+                    textProgress.text = ""
                 } else {
                     currentQuestionIndex = 0
                     showQuestion()
@@ -101,20 +95,25 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
 
     private fun generateOptions(word: WordEntity, allWords: List<WordEntity>): List<String> {
         val options = mutableSetOf(word.translation)
-
         while (options.size < 4 && allWords.isNotEmpty()) {
             val randomWord = allWords[Random.nextInt(allWords.size)]
             options.add(randomWord.translation)
         }
-
         return options.shuffled()
     }
 
     private fun showQuestion() {
         val question = questions[currentQuestionIndex]
         textQuestion.text = question.text
+
+        // Обновляем счетчик с правильным склонением
+        val totalQuestions = questions.size
+        val currentNumber = currentQuestionIndex + 1
+        textProgress.text = "$currentNumber ${questionsWord(currentNumber)} из $totalQuestions ${questionsWord(totalQuestions)}"
+
         showOptions(question.options, question.correctAnswer)
     }
+
 
     private fun showOptions(options: List<String>, correctAnswer: String) {
         optionsContainer.removeAllViews()
@@ -156,6 +155,19 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
             textQuestion.text = "Тест завершён 🎉"
             optionsContainer.removeAllViews()
             btnNext.visibility = View.GONE
+            textProgress.text = ""
+        }
+    }
+
+    // Склонение слова "вопрос"
+    private fun questionsWord(count: Int): String {
+        val rem100 = count % 100
+        val rem10 = count % 10
+        return when {
+            rem100 in 11..19 -> "вопросов"
+            rem10 == 1 -> "вопрос"
+            rem10 in 2..4 -> "вопроса"
+            else -> "вопросов"
         }
     }
 }
