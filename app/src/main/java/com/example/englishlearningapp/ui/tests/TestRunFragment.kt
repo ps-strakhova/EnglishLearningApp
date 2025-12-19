@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.englishlearningapp.R
 import com.example.englishlearningapp.data.database.AppDatabase
+import com.example.englishlearningapp.data.model.Question
 import com.example.englishlearningapp.data.model.WordEntity
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +27,7 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
 
     private var currentQuestionIndex = 0
     private var isAnswered = false
+    private var correctAnswersCount = 0
 
     private var testId: String? = null
     private var testTopic: String? = null
@@ -46,8 +50,7 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
 
         lifecycleScope.launch { loadQuestions() }
 
-        val btnClose = view.findViewById<TextView>(R.id.btnClose)
-        btnClose.setOnClickListener {
+        view.findViewById<TextView>(R.id.btnClose)?.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
     }
@@ -57,20 +60,18 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
             val dao = AppDatabase.getDatabase(requireContext()).wordDao()
 
             val words: List<WordEntity> = when {
-                testTopic == null && testId == "all_words" -> dao.getTopics().flatMap { dao.getWordsByTopic(it) }
+                testTopic != null -> dao.getWordsByTopic(testTopic!!)
+                testId == "all_words" -> dao.getTopics().flatMap { dao.getWordsByTopic(it) }
                 testId == "favorite_words" -> dao.getWordsByFavorite(true)
                 testId == "new_words" -> dao.getWordsByLearned(false)
-                testTopic != null -> dao.getWordsByTopic(testTopic!!)
                 else -> emptyList()
             }
 
-            // Перемешиваем слова внутри темы и общий порядок
-            val groupedByTopic = words.groupBy { it.topic ?: "no_topic" }
-            val shuffledWords = groupedByTopic.flatMap { (_, list) -> list.shuffled() }.shuffled()
+            val shuffledWords = words.shuffled()
 
-            val allWordsForOptions = dao.getTopics().flatMap { dao.getWordsByTopic(it) }
+            // Для вариантов берем слова **только из той же темы**, чтобы тест был корректным
+            val allWordsForOptions = if (testTopic != null) words else dao.getTopics().flatMap { dao.getWordsByTopic(it) }
 
-            // Создаем вопросы с полным текстом
             questions = shuffledWords.map { word ->
                 val options = generateOptions(word, allWordsForOptions)
                 Question(
@@ -87,6 +88,7 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
                     textProgress.text = ""
                 } else {
                     currentQuestionIndex = 0
+                    correctAnswersCount = 0
                     showQuestion()
                 }
             }
@@ -95,8 +97,10 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
 
     private fun generateOptions(word: WordEntity, allWords: List<WordEntity>): List<String> {
         val options = mutableSetOf(word.translation)
-        while (options.size < 4 && allWords.isNotEmpty()) {
-            val randomWord = allWords[Random.nextInt(allWords.size)]
+        // Берем случайные переводы из **той же темы**
+        val candidates = allWords.filter { it.translation != word.translation }
+        while (options.size < 4 && candidates.isNotEmpty()) {
+            val randomWord = candidates[Random.nextInt(candidates.size)]
             options.add(randomWord.translation)
         }
         return options.shuffled()
@@ -106,14 +110,14 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
         val question = questions[currentQuestionIndex]
         textQuestion.text = question.text
 
-        // Обновляем счетчик с правильным склонением
         val totalQuestions = questions.size
         val currentNumber = currentQuestionIndex + 1
         textProgress.text = "$currentNumber ${questionsWord(currentNumber)} из $totalQuestions ${questionsWord(totalQuestions)}"
 
+        btnNext.text = if (currentQuestionIndex == questions.size - 1) "Завершить" else "Далее"
+
         showOptions(question.options, question.correctAnswer)
     }
-
 
     private fun showOptions(options: List<String>, correctAnswer: String) {
         optionsContainer.removeAllViews()
@@ -128,6 +132,7 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
             optionView.setOnClickListener {
                 if (isAnswered) return@setOnClickListener
                 isAnswered = true
+                if (optionText == correctAnswer) correctAnswersCount++
                 highlightAnswers(correctAnswer, optionText)
                 btnNext.visibility = View.VISIBLE
             }
@@ -152,14 +157,29 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
         if (currentQuestionIndex < questions.size) {
             showQuestion()
         } else {
-            textQuestion.text = "Тест завершён 🎉"
-            optionsContainer.removeAllViews()
-            btnNext.visibility = View.GONE
-            textProgress.text = ""
+            showResultDialog()
         }
     }
 
-    // Склонение слова "вопрос"
+    private fun showResultDialog() {
+        val totalQuestions = questions.size
+        AlertDialog.Builder(requireContext())
+            .setTitle("Результат теста")
+            .setMessage("Вы ответили правильно на $correctAnswersCount из $totalQuestions ${questionsWord(totalQuestions)}")
+            .setPositiveButton("Пройти заново") { _, _ -> restartTest() }
+            .setNegativeButton("Вернуться на главную") { _, _ ->
+                findNavController().navigate(R.id.homeFragment)
+            }
+            .setCancelable(false)
+            .show()
+    }
+
+    private fun restartTest() {
+        currentQuestionIndex = 0
+        correctAnswersCount = 0
+        showQuestion()
+    }
+
     private fun questionsWord(count: Int): String {
         val rem100 = count % 100
         val rem10 = count % 10
@@ -171,9 +191,3 @@ class TestRunFragment : Fragment(R.layout.fragment_test_run) {
         }
     }
 }
-
-data class Question(
-    val text: String,
-    val options: List<String>,
-    val correctAnswer: String
-)
