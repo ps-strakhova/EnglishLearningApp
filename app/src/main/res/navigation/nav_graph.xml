@@ -10,7 +10,19 @@
 
     <fragment
         android:id="@+id/testsFragment"
-        android:name="com.example.englishlearningapp.ui.tests.TestsFragment" />
+        android:name="com.example.englishlearningapp.ui.tests.TestsFragment">
+
+        <!-- ✅ ACTION К ТЕСТУ -->
+        <action
+            android:id="@+id/action_testsFragment_to_testRunFragment"
+            app:destination="@id/testRunFragment" />
+    </fragment>
+
+    <!-- ✅ ФРАГМЕНТ ЗАПУСКА ТЕСТА -->
+    <fragment
+        android:id="@+id/testRunFragment"
+        android:name="com.example.englishlearningapp.ui.tests.TestRunFragment"
+        android:label="Test Run" />
 
     <fragment
         android:id="@+id/topicsFragment"
@@ -52,6 +64,5 @@
             android:id="@+id/action_wordsFragment_to_wordCardFragment"
             app:destination="@id/wordCardFragment" />
     </fragment>
-
 
 </navigation>
