@@ -17,6 +17,8 @@ import com.example.englishlearningapp.data.database.AppDatabase
 import com.example.englishlearningapp.data.model.WordEntity
 import com.example.englishlearningapp.data.repository.WordRepository
 import kotlinx.coroutines.launch
+import com.example.englishlearningapp.data.model.UserProfilePrefs
+
 
 class ProfileFragment : Fragment() {
 
@@ -51,10 +53,12 @@ class ProfileFragment : Fragment() {
 
         // stats (demo)
         val tvWordsLearned: TextView = view.findViewById(R.id.tvWordsLearned)
-        val tvStreak: TextView = view.findViewById(R.id.tvStreak)
         val tvRank: TextView = view.findViewById(R.id.tvRank)
-        tvWordsLearned.text = "755"
-        tvStreak.text = "28"
+
+        val tvPoints: TextView = view.findViewById(R.id.tvPoints)
+        tvPoints.text = UserProfilePrefs.getPoints(requireContext()).toString()
+
+        tvWordsLearned.text = "13"
         tvRank.text = "#4"
 
         // tabs
@@ -73,6 +77,8 @@ class ProfileFragment : Fragment() {
 
         // load words from DB
         lifecycleScope.launch {
+            val learnedCount = repository.getLearnedWordsCount()
+            tvWordsLearned.text = learnedCount.toString()
             favoriteWords = repository.getFavoriteWords()
             knownWords = repository.getLearnedWords()
 

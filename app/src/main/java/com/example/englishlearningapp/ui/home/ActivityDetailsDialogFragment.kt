@@ -8,13 +8,11 @@ import android.view.WindowManager
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.example.englishlearningapp.R
+import com.example.englishlearningapp.data.model.PluralUtils
+import com.example.englishlearningapp.data.model.ActivityItem
 
-class ActivityDetailsDialogFragment(
-    private val icon: String,
-    private val titleText: String,
-    private val descriptionText: String,
-    private val pointsValue: Int
-) : DialogFragment() {
+
+class ActivityDetailsDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
@@ -29,26 +27,37 @@ class ActivityDetailsDialogFragment(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.dialog_activity_details, container, false)
-    }
+    ): View =
+        inflater.inflate(R.layout.dialog_activity_details, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val icon = requireArguments().getString("icon") ?: "📚"
+        val title = requireArguments().getString("title") ?: ""
+        val description = requireArguments().getString("description") ?: ""
+        val points = requireArguments().getInt("points")
+
         view.findViewById<TextView>(R.id.icon).text = icon
-        view.findViewById<TextView>(R.id.title).text = titleText
-        view.findViewById<TextView>(R.id.description).text = descriptionText
-        view.findViewById<TextView>(R.id.points).text = "+$pointsValue баллов"
+        view.findViewById<TextView>(R.id.title).text = title
+        view.findViewById<TextView>(R.id.description).text = description
+        view.findViewById<TextView>(R.id.points).text =
+            "+$points ${PluralUtils.pointsWord(points)}"
 
-        view.findViewById<TextView>(R.id.btnClose).setOnClickListener {
-            dismiss()
-        }
+        view.findViewById<TextView>(R.id.btnClose).setOnClickListener { dismiss() }
+        view.findViewById<TextView>(R.id.btnContinue).setOnClickListener { dismiss() }
+    }
 
-        view.findViewById<TextView>(R.id.btnContinue).setOnClickListener {
-            dismiss()
-            // позже сюда добавим переход к обучению
+    companion object {
+        fun newInstance(item: ActivityItem): ActivityDetailsDialogFragment {
+            return ActivityDetailsDialogFragment().apply {
+                arguments = Bundle().apply {
+                    putString("icon", item.iconEmoji)
+                    putString("title", item.title)
+                    putString("description", item.description)
+                    putInt("points", item.points)
+                }
+            }
         }
     }
 }
-

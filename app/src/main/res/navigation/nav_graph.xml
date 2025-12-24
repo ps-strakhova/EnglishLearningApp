@@ -4,9 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:startDestination="@id/homeFragment">
 
-    <fragment
-        android:id="@+id/homeFragment"
-        android:name="com.example.englishlearningapp.ui.home.HomeFragment" />
 
     <fragment
         android:id="@+id/testsFragment"
@@ -20,12 +17,17 @@
 
     <fragment
         android:id="@+id/testRunFragment"
-        android:name="com.example.englishlearningapp.ui.tests.TestRunFragment"
-        android:label="Test Run">
-        <argument
-            android:name="testId"
-            app:argType="string" />
+        android:name="com.example.englishlearningapp.ui.tests.TestRunFragment">
+
+        <action
+            android:id="@+id/action_testRunFragment_to_testResultFragment"
+            app:destination="@id/testResultFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/testResultFragment"
+        android:name="com.example.englishlearningapp.ui.result.TestResultFragment" />
+
 
     <fragment
         android:id="@+id/topicsFragment"
@@ -67,5 +69,15 @@
             android:id="@+id/action_wordsFragment_to_wordCardFragment"
             app:destination="@id/wordCardFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.englishlearningapp.ui.home.HomeFragment">
+
+        <action
+            android:id="@+id/action_homeFragment_to_testRunFragment"
+            app:destination="@id/testRunFragment" />
+    </fragment>
+
 
 </navigation>

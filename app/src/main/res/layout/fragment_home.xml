@@ -100,7 +100,7 @@
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:layout_marginTop="16dp"
-            android:text="Начать быстрый тест"
+            android:text="Начать изучение!"
             android:textColor="@color/bg"
             android:textSize="16sp"
             android:textStyle="bold"

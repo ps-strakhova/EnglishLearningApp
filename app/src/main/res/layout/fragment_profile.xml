@@ -27,7 +27,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Profile"
+                android:text="Профиль"
                 android:textSize="28sp"
                 android:textColor="#1A1A1A"
                 android:textStyle="bold"
@@ -121,7 +121,7 @@
                         android:id="@+id/tvMemberSince"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Member since Dec 2024"
+                        android:text="Вы присоединились с Dec 2024"
                         android:textSize="14sp"
                         android:textColor="#E6FFFFFF" />
                 </LinearLayout>
@@ -156,7 +156,7 @@
                         android:id="@+id/tvWordsLearned"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="755"
+                        android:text="0"
                         android:textSize="24sp"
                         android:textStyle="bold"
                         android:textColor="#FFFFFF"
@@ -165,7 +165,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Words Learned"
+                        android:text="Слов выучено"
                         android:textSize="12sp"
                         android:textColor="#E6FFFFFF"
                         android:fontFamily="sans-serif"/>
@@ -181,19 +181,20 @@
                     android:padding="8dp">
 
                     <TextView
-                        android:id="@+id/tvStreak"
+                        android:id="@+id/tvPoints"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="28"
+                        android:text="0"
                         android:textSize="24sp"
                         android:textStyle="bold"
                         android:textColor="#FFFFFF"
                         android:fontFamily="sans-serif-medium"/>
 
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Day Streak"
+                        android:text="Очки"
                         android:textSize="12sp"
                         android:textColor="#E6FFFFFF"
                         android:fontFamily="sans-serif"/>
@@ -228,7 +229,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ranking"
+                        android:text="Рейтинг"
                         android:textSize="12sp"
                         android:textColor="#E6FFFFFF"
                         android:fontFamily="sans-serif"/>

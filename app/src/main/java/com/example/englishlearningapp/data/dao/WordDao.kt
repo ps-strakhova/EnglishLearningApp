@@ -5,6 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.englishlearningapp.data.model.WordEntity
+import androidx.room.Update
+
 
 @Dao
 interface WordDao {
@@ -30,6 +32,12 @@ interface WordDao {
 
     @Query("SELECT COUNT(*) FROM words WHERE topic = :topic AND isLearned = 1")
     suspend fun getLearnedWordsCountByTopic(topic: String): Int
+
+    @Query("UPDATE words SET isLearned = 1 WHERE word = :word")
+    suspend fun markAsLearned(word: String)
+
+    @Query("UPDATE words SET isLearned = 0 WHERE word = :word")
+    suspend fun removeFromUnknown(word: String)
 
 
     // =====================
@@ -78,4 +86,12 @@ interface WordDao {
     @Query("SELECT * FROM words WHERE isLearned = 0")
     suspend fun getUnknownWords(): List<WordEntity>
 
+    @Query("SELECT * FROM words WHERE word = :text LIMIT 1")
+    suspend fun getWordByText(text: String): WordEntity?
+
+    @Update
+    suspend fun update(word: WordEntity)
+
+    @Query("SELECT * FROM words WHERE id = :id LIMIT 1")
+    suspend fun getWordById(id: Int): WordEntity?
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp">
+
+    <EditText
+        android:id="@+id/etAnswer"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Введите слово на английском"
+        android:background="@drawable/bg_input_default"
+        android:padding="12dp"
+        android:inputType="text"
+        android:textSize="16sp"/>
+
+    <!-- Правильный ответ (показывается только при ошибке) -->
+    <TextView
+        android:id="@+id/tvCorrectAnswer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Правильный ответ: apple"
+        android:textColor="@color/text_muted"
+        android:textSize="14sp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCheck"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Проверить"
+        android:layout_marginTop="12dp"/>
+</LinearLayout>

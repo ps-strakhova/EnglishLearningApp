@@ -54,10 +54,13 @@ class WordRepository(private val dao: WordDao) {
     // =====================
     suspend fun getWordsByTopic(topic: String): List<WordEntity> = dao.getWordsByTopic(topic)
 
-    suspend fun setFavorite(word: WordEntity, favorite: Boolean) = dao.updateFavorite(word.id, favorite)
+    suspend fun setFavorite(word: WordEntity, value: Boolean) {
+        dao.update(word.copy(isFavorite = value))
+    }
     suspend fun getFavoriteWords(): List<WordEntity> = dao.getFavoriteWords()
-    suspend fun setLearned(word: WordEntity, learned: Boolean) = dao.updateLearned(word.id, learned)
-
+    suspend fun setLearned(word: WordEntity, value: Boolean) {
+        dao.update(word.copy(isLearned = value))
+    }
     suspend fun getLearnedWords(): List<WordEntity> = dao.getWordsByLearned(true)
 
     suspend fun getUnknownWords(): List<WordEntity> = dao.getWordsByLearned(false)
@@ -65,5 +68,16 @@ class WordRepository(private val dao: WordDao) {
     suspend fun getAllWords(): List<WordEntity> = dao.getAllWords() // теперь использует DAO напрямую
 
     suspend fun getNewWords(): List<WordEntity> = dao.getUnknownWords() // теперь использует DAO напрямую
+
+    suspend fun removeFromUnknown(word: String) {
+        dao.removeFromUnknown(word)
+    }
+
+    suspend fun getWordById(id: Int): WordEntity? {
+        return dao.getWordById(id)
+    }
+    suspend fun getWordsCountByTopic(topic: String): Int {
+        return dao.getWordsCountByTopic(topic)
+    }
 
 }

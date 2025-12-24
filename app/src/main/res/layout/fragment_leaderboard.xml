@@ -27,7 +27,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Leaderboard"
+                android:text="Таблица лидеров"
                 android:textSize="28sp"
                 android:textColor="#1A1A1A"
                 android:textStyle="bold"
@@ -40,7 +40,7 @@
             android:id="@+id/tvLeaderboardSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your ranking among learners"
+            android:text="Найди себя среди всех пользователей в топе!"
             android:textSize="14sp"
             android:textColor="#9E9E9E"
             android:layout_marginTop="8dp" />
@@ -104,7 +104,7 @@
                                     android:id="@+id/tvYourRankLabel"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Your Rank"
+                                    android:text="Твой рейтинг"
                                     android:textSize="20sp"
                                     android:textStyle="normal"
                                     android:textColor="#FFFFFF"
@@ -114,7 +114,7 @@
                                     android:id="@+id/tvYourRankSubtitle"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Keep climbing!"
+                                    android:text="Ничесе!"
                                     android:textSize="14sp"
                                     android:textColor="#E6FFFFFF"
                                     android:layout_marginTop="2dp"/>
@@ -153,17 +153,17 @@
                             android:gravity="center">
 
                             <TextView
-                                android:id="@+id/tvCurrentPoints"
+                                android:id="@+id/tvPoints"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="2100"
+                                android:text="0"
                                 android:textSize="20sp"
                                 android:textColor="#FFFFFF"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Points"
+                                android:text="Очки"
                                 android:textSize="12sp"
                                 android:textColor="#E6FFFFFF"/>
                         </LinearLayout>
@@ -179,14 +179,14 @@
                                 android:id="@+id/tvCurrentWords"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="755"
+                                android:text="0"
                                 android:textSize="20sp"
                                 android:textColor="#FFFFFF"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Words"
+                                android:text="Слов"
                                 android:textSize="12sp"
                                 android:textColor="#E6FFFFFF"/>
                         </LinearLayout>
@@ -202,14 +202,14 @@
                                 android:id="@+id/tvCurrentStreak"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="28"
+                                android:text="5"
                                 android:textSize="20sp"
                                 android:textColor="#FFFFFF"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Day Streak"
+                                android:text="Дней актива"
                                 android:textSize="12sp"
                                 android:textColor="#E6FFFFFF"/>
                         </LinearLayout>
@@ -235,7 +235,7 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
 
-                android:text="This week"
+                android:text="Неделя"
                 android:textSize="14sp"
                 android:textAllCaps="false"
 
@@ -255,7 +255,7 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
 
-                android:text="All time"
+                android:text="Все время"
                 android:textSize="14sp"
                 android:textAllCaps="false"
 
@@ -319,14 +319,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Climb the ranks!"
+                        android:text="Иди вверх по таблице!"
                         android:textSize="14sp"
                         android:textColor="#1A1A1A"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Complete daily goals and maintain your streak to earn more points"
+                        android:text="Выполняй дневные нормы и опережай других пользователей, увеличивая свои баллы!"
                         android:textSize="13sp"
                         android:textColor="#757575"
                         android:layout_marginTop="4dp"/>

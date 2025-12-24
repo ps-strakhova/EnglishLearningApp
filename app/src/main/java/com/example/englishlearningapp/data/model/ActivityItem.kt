@@ -4,8 +4,14 @@ data class ActivityItem(
     val iconEmoji: String,
     val title: String,
     val category: String,
-    val timeAgo: String,
-    val description: String,
-    val points: Int
+    val timestamp: Long,
+
+    val description: String, // ✅ ВОЗВРАЩАЕМ
+
+    val points: Int,
+    val correct: Int,
+    val total: Int
 )
+
+
 

@@ -7,6 +7,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.englishlearningapp.R
 import com.example.englishlearningapp.data.model.TestItem
+import com.example.englishlearningapp.data.model.SubscriptionManager
+import com.example.englishlearningapp.data.model.premiumTopics
 
 class TestsAdapter(
     private val onClick: (TestItem) -> Unit
@@ -46,14 +48,29 @@ class TestsAdapter(
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val item = items[position]
-        holder.icon.text = item.icon
+
+        val isLocked =
+            item.title in premiumTopics && !SubscriptionManager.hasSubscription
+
         holder.title.text = item.title
-        holder.subtitle.text = "${item.questionsCount} ${questionsWord(item.questionsCount)}"
+        holder.subtitle.text =
+            "${item.questionsCount} ${questionsWord(item.questionsCount)}"
+
+        if (isLocked) {
+            holder.icon.text = "🔒"
+            holder.icon.alpha = 0.5f
+            holder.itemView.alpha = 0.5f
+        } else {
+            holder.icon.text = item.icon
+            holder.icon.alpha = 1f
+            holder.itemView.alpha = 1f
+        }
 
         holder.itemView.setOnClickListener {
             onClick(item)
         }
     }
+
 
     override fun getItemCount(): Int = items.size
 }

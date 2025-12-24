@@ -70,6 +70,22 @@
                 android:text="2 часа назад"
                 android:textColor="@color/text_muted"
                 android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/tvPoints"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+10"
+                android:textColor="#2E7D32"
+                android:textSize="13sp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:background="@drawable/bg_points_green"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"/>
+
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -6,211 +6,217 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.englishlearningapp.R
 import com.example.englishlearningapp.data.database.AppDatabase
-import com.example.englishlearningapp.data.model.Question
-import com.example.englishlearningapp.data.model.WordEntity
-import com.example.englishlearningapp.data.model.WrongAnswer
+import com.example.englishlearningapp.data.model.*
 import com.example.englishlearningapp.data.repository.WordRepository
-import com.example.englishlearningapp.ui.result.TestResultFragment
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.random.Random
 
 class TestRunFragment : Fragment(R.layout.fragment_test_run) {
+
+    private lateinit var repository: WordRepository
 
     private lateinit var textQuestion: TextView
     private lateinit var optionsContainer: LinearLayout
     private lateinit var btnNext: MaterialButton
     private lateinit var textProgress: TextView
 
-    private val wrongAnswersList = mutableListOf<WrongAnswer>()
-    private var currentQuestionIndex = 0
+    private val wrongAnswers = mutableListOf<WrongAnswer>()
+
+    private var index = 0
+    private var correctCount = 0
     private var isAnswered = false
 
-    private var testId: String? = null
-    private var testTopic: String? = null
     private var questions: List<Question> = emptyList()
-    private var correctAnswers = 0
-    private var wrongAnswers = 0
+
+    private var source: String? = null
+    private var testTopic: String? = null
+    private var topicIcon: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        repository = WordRepository(
+            AppDatabase.getDatabase(requireContext()).wordDao()
+        )
 
         textQuestion = view.findViewById(R.id.textQuestion)
         optionsContainer = view.findViewById(R.id.optionsContainer)
         btnNext = view.findViewById(R.id.btnNext)
         textProgress = view.findViewById(R.id.textProgress)
 
-        btnNext.setOnClickListener { goToNextQuestion() }
-
-        testId = arguments?.getString("testId")
+        source = arguments?.getString("source")
         testTopic = arguments?.getString("testTopic")
+        topicIcon = arguments?.getString("topicIcon")
+
+        btnNext.setOnClickListener { nextQuestion() }
+
+        view.findViewById<TextView>(R.id.btnClose).setOnClickListener {
+            findNavController().navigateUp()
+        }
 
         lifecycleScope.launch { loadQuestions() }
-
-        view.findViewById<TextView>(R.id.btnClose)?.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
-        }
     }
 
-    private suspend fun loadQuestions() {
-        withContext(Dispatchers.IO) {
-            val dao = AppDatabase.getDatabase(requireContext()).wordDao()
-            val repository = WordRepository(dao)
+    private suspend fun loadQuestions() = withContext(Dispatchers.IO) {
+        val allWords = repository.getAllWords()
 
-            // Берём все слова из базы для генерации вариантов
-            val allWords = repository.getAllWords()
+        val words = when (arguments?.getString("testId")) {
+            "quick_random" -> allWords.shuffled().take(10)
+            "favorite_words" -> repository.getFavoriteWords()
+            "new_words" -> repository.getNewWords()
+            else -> testTopic?.let { repository.getWordsByTopic(it) } ?: emptyList()
+        }
 
-            // Слова для текущего теста
-            val words: List<WordEntity> = when (testId) {
-                "all_words" -> allWords
-                "favorite_words" -> repository.getFavoriteWords()
-                "new_words" -> repository.getNewWords()
-                else -> testTopic?.let { repository.getWordsByTopic(it) } ?: emptyList()
-            }
+        questions = words.shuffled().map { word ->
+            val type =
+                if ((0..100).random() < 30) QuestionType.INPUT else QuestionType.OPTIONS
 
-            val shuffledWords = words.shuffled()
-
-            questions = shuffledWords.map { word ->
-                // Для тестов по теме используем слова только из этой темы, иначе – все слова
-                val optionsSource = if (testTopic != null) {
-                    repository.getWordsByTopic(testTopic!!) // только слова темы
-                } else {
-                    allWords
-                }
-
-                val options = generateOptions(word, optionsSource)
+            if (type == QuestionType.INPUT) {
                 Question(
+                    word = word,
+                    text = "Как пишется слово «${word.translation}» на английском?",
+                    options = emptyList(),
+                    correctAnswer = word.word,
+                    type = type
+                )
+            } else {
+                Question(
+                    word = word,
                     text = "Как переводится слово \"${word.word}\"?",
-                    options = options,
-                    correctAnswer = word.translation
+                    options = generateOptions(word, allWords),
+                    correctAnswer = word.translation,
+                    type = type
                 )
             }
-
-            withContext(Dispatchers.Main) {
-                if (questions.isEmpty()) {
-                    textQuestion.text = "Нет вопросов для этого теста"
-                    btnNext.visibility = View.GONE
-                    textProgress.text = ""
-                } else {
-                    currentQuestionIndex = 0
-                    showQuestion()
-                }
-            }
         }
+
+        withContext(Dispatchers.Main) { showQuestion() }
     }
 
-    private fun generateOptions(word: WordEntity, sourceWords: List<WordEntity>): List<String> {
+    private fun generateOptions(word: WordEntity, all: List<WordEntity>): List<String> {
         val options = mutableSetOf(word.translation)
-
-        // Берём 3 случайных неправильных перевода из переданного списка
-        val candidates = sourceWords.filter { it.translation != word.translation }
-        while (options.size < 4 && candidates.isNotEmpty()) {
-            val randomWord = candidates.random()
-            options.add(randomWord.translation)
-        }
-
+        val pool = all.filter { it.translation != word.translation }
+        while (options.size < 4) options.add(pool.random().translation)
         return options.shuffled()
     }
 
     private fun showQuestion() {
-        val question = questions[currentQuestionIndex]
-        textQuestion.text = question.text
+        val q = questions[index]
 
-        val totalQuestions = questions.size
-        val currentNumber = currentQuestionIndex + 1
-        textProgress.text = "$currentNumber ${questionsWord(currentNumber)} из $totalQuestions ${questionsWord(totalQuestions)}"
+        textQuestion.text = q.text
+        textProgress.text = "${index + 1} из ${questions.size}"
+        btnNext.visibility = View.GONE
+        isAnswered = false
+        optionsContainer.removeAllViews()
 
-        btnNext.text = if (currentQuestionIndex == questions.size - 1) "Завершить" else "Далее"
-
-        showOptions(question.options, question.correctAnswer)
+        if (q.type == QuestionType.OPTIONS) showOptions(q)
+        else showInput(q)
     }
 
-    private fun showOptions(options: List<String>, correctAnswer: String) {
-        optionsContainer.removeAllViews()
-        isAnswered = false
-        btnNext.visibility = View.GONE
+    private fun showOptions(q: Question) {
+        q.options.forEach { option ->
+            val tv =
+                layoutInflater.inflate(R.layout.item_option, optionsContainer, false) as TextView
+            tv.text = option
 
-        options.forEach { optionText ->
-            val optionView = layoutInflater.inflate(R.layout.item_option, optionsContainer, false) as TextView
-            optionView.text = optionText
-            optionView.setBackgroundResource(R.drawable.bg_option_default)
-
-            optionView.setOnClickListener {
+            tv.setOnClickListener {
                 if (isAnswered) return@setOnClickListener
                 isAnswered = true
-                highlightAnswers(correctAnswer, optionText)
+
+                if (option == q.correctAnswer) {
+                    correctCount++
+                    tv.setBackgroundResource(R.drawable.bg_option_correct)
+                } else {
+                    wrongAnswers.add(
+                        WrongAnswer(
+                            word = q.word.word,
+                            translation = q.word.translation,
+                            topic = q.word.topic,
+                            wordId = q.word.id
+                        )
+                    )
+                    tv.setBackgroundResource(R.drawable.bg_option_wrong)
+                    highlightCorrect(q.correctAnswer)
+                }
+
                 btnNext.visibility = View.VISIBLE
             }
-
-            optionsContainer.addView(optionView)
+            optionsContainer.addView(tv)
         }
     }
 
-    private fun highlightAnswers(correctAnswer: String, selectedAnswer: String) {
-        val question = questions[currentQuestionIndex]
-        val isCorrect = correctAnswer == selectedAnswer
-
-        if (isCorrect) correctAnswers++ else {
-            wrongAnswers++
-            wrongAnswersList.add(
-                WrongAnswer(
-                    word = extractWordFromQuestion(question.text),
-                    translation = correctAnswer,
-                    topic = testTopic
-                )
-            )
-        }
-
+    private fun highlightCorrect(correct: String) {
         for (i in 0 until optionsContainer.childCount) {
-            val option = optionsContainer.getChildAt(i) as TextView
-            option.isClickable = false
-            when {
-                option.text == correctAnswer -> option.setBackgroundResource(R.drawable.bg_option_correct)
-                option.text == selectedAnswer -> option.setBackgroundResource(R.drawable.bg_option_wrong)
+            val v = optionsContainer.getChildAt(i) as TextView
+            if (v.text == correct) {
+                v.setBackgroundResource(R.drawable.bg_option_correct)
             }
         }
     }
 
-    private fun extractWordFromQuestion(text: String): String {
-        return text.substringAfter("\"").substringBefore("\"")
+    private fun showInput(q: Question) {
+        val v = layoutInflater.inflate(R.layout.item_input_answer, optionsContainer, false)
+
+        val input = v.findViewById<TextView>(R.id.etAnswer)
+        val btnCheck = v.findViewById<MaterialButton>(R.id.btnCheck)
+        val tvCorrect = v.findViewById<TextView>(R.id.tvCorrectAnswer)
+
+        btnCheck.setOnClickListener {
+            if (isAnswered) return@setOnClickListener
+            isAnswered = true
+
+            val userAnswer = input.text.toString().trim()
+
+            if (userAnswer.equals(q.correctAnswer, true)) {
+                correctCount++
+                input.setBackgroundResource(R.drawable.bg_input_correct)
+            } else {
+                wrongAnswers.add(
+                    WrongAnswer(
+                        word = q.word.word,
+                        translation = q.word.translation,
+                        topic = q.word.topic,
+                        wordId = q.word.id
+                    )
+                )
+
+                input.setBackgroundResource(R.drawable.bg_input_wrong)
+
+                tvCorrect.text = "Правильный ответ: ${q.correctAnswer}"
+                tvCorrect.visibility = View.VISIBLE
+            }
+
+            btnCheck.visibility = View.GONE
+            btnNext.visibility = View.VISIBLE
+        }
+
+        optionsContainer.addView(v)
     }
 
-    private fun goToNextQuestion() {
-        if (currentQuestionIndex < questions.size - 1) {
-            currentQuestionIndex++
+
+    private fun nextQuestion() {
+        if (index < questions.lastIndex) {
+            index++
             showQuestion()
-        } else {
-            openResultScreen()
-        }
+        } else finishTest()
     }
 
-    private fun openResultScreen() {
-        val fragment = TestResultFragment().apply {
-            arguments = Bundle().apply {
-                putInt("correct", correctAnswers)
-                putInt("wrong", wrongAnswers)
-                putSerializable("wrongWords", ArrayList(wrongAnswersList))
+    private fun finishTest() {
+        findNavController().navigate(
+            R.id.action_testRunFragment_to_testResultFragment,
+            Bundle().apply {
+                putInt("correct", correctCount)
+                putInt("wrong", wrongAnswers.size)
+                putSerializable("wrongWords", ArrayList(wrongAnswers))
+                putString("source", source)
+                putString("testTopic", testTopic)
+                putString("topicIcon", topicIcon)
             }
-        }
-
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.nav_host_fragment, fragment)
-            .addToBackStack(null)
-            .commit()
-    }
-
-    private fun questionsWord(count: Int): String {
-        val rem100 = count % 100
-        val rem10 = count % 10
-        return when {
-            rem100 in 11..19 -> "вопросов"
-            rem10 == 1 -> "вопрос"
-            rem10 in 2..4 -> "вопроса"
-            else -> "вопросов"
-        }
+        )
     }
 }

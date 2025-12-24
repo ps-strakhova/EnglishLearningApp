@@ -50,7 +50,39 @@
                 android:layout_width="220dp"
                 android:layout_height="220dp"
                 android:layout_gravity="center" />
+
+            <!-- Легенда -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+
+                <View
+                    android:layout_width="18dp"
+                    android:layout_height="1dp"/>
+
+            </LinearLayout>
+
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvEarnedPoints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:padding="14dp"
+            android:background="@drawable/bg_points"
+            android:textColor="#2E7D32"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:text=""/>
+
 
         <!-- Заголовок ошибок -->
         <TextView
@@ -86,7 +118,7 @@
             android:id="@+id/btnBackToMain"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="Вернуться к тестам"
+            android:text="Завершить тест"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:backgroundTint="#6C4DFF"
